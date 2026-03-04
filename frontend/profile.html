@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý hồ sơ | FixItNow</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- CSS riêng của page -->
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar-custom">
+        <div class="container nav-wrapper">
+            <div class="logo">FixItNow</div>
+
+            <div class="nav-actions">
+
+                <!-- Nút Trang chủ -->
+                <a href="index.html" class="btn-home">
+                    <img src="assets/images/home.png" alt="">
+                    Trang chủ
+                </a>
+
+                <!-- Đã đăng nhập -->
+                <div class="nav-user">
+
+                    <!-- Notification icon -->
+                    <div class="nav-icon">
+                        <img src="assets/images/bell.png" alt="Thông báo">
+                    </div>
+
+                    <!-- User dropdown -->
+                    <div class="user-dropdown">
+
+                        <img id="userAvatar" 
+                            src="assets/images/user.png" 
+                            class="user-avatar" />
+
+                        <div class="dropdown-menu">
+                            <a href="#">
+                                <img src="assets/images/list.png" width="18">
+                                Quản lý yêu cầu
+                            </a>
+
+                            <a href="profile.html">
+                                <img src="assets/images/avatar.png" width="18">
+                                Quản lý hồ sơ
+                            </a>
+
+                            <a href="#" id="logoutBtn">
+                                <img src="assets/images/logout.png" width="18">
+                                Đăng xuất
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= CONTENT ================= -->
+    <section class="profile-wrapper">
+
+        <div class="empty-profile-box">
+            <h2>Bạn chưa có hồ sơ thợ sửa</h2>
+            <p>Hãy tạo hồ sơ để khách hàng có thể tìm thấy bạn.</p>
+            <button class="create-btn" id="openModal">Tạo hồ sơ</button>
+        </div>
+
+    </section>
+
+    <!-- ================= CREATE PROFILE MODAL ================= -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-content">
+
+            <!-- Icon đóng -->
+            <div class="modal-header">
+                <img src="assets/images/close.png" class="close-icon" id="closeModal">
+            </div>
+
+            <h2>Tạo hồ sơ thợ sửa</h2>
+
+            <form id="profileForm">
+
+                <!-- Họ tên / cửa hàng -->
+                <div class="form-group">
+                    <label>Họ và tên / Tên cửa hàng</label>
+                    <input type="text" placeholder="Ví dụ: Nguyễn Văn A / Sửa điện Minh Phát">
+                    <small>Nhập tên cá nhân hoặc tên cửa hàng của bạn.</small>
+                </div>
+
+                <!-- SĐT -->
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" placeholder="Ví dụ: 09xxxxxxxx">
+                    <small>Số điện thoại khách hàng có thể liên hệ với bạn.</small>
+                </div>
+
+                <!-- Địa chỉ -->
+                <div class="form-group">
+                    <label>Địa chỉ</label>
+                    <input type="text" placeholder="Ví dụ: 71 Ngũ Hành Sơn, Đà Nẵng">
+                </div>
+
+                <!-- Mô tả -->
+                <div class="form-group">
+                    <label>Mô tả dịch vụ / Kinh nghiệm / Chứng chỉ</label>
+                    <textarea class="auto-expand"
+                        placeholder="Giới thiệu về kinh nghiệm, chứng chỉ, kỹ năng,... để khách hàng hiểu hơn về bạn."></textarea>
+                </div>
+
+                <!-- Danh mục -->
+                <div class="form-group">
+                    <label>Danh mục sửa chữa</label>
+
+                    <div class="service-actions">
+                        <button type="button" id="selectAll">Chọn tất cả</button>
+                        <button type="button" id="deselectAll">Bỏ chọn tất cả</button>
+                    </div>
+
+                    <div class="service-grid">
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/electrical.png"> Sửa điện</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/Plumbing.png"> Sửa ống nước</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/Air_conditioner.png"> Sửa máy lạnh</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/washing-machine.png"> Sửa máy giặt</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/refrigerator.png"> Sửa tủ lạnh</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/gas.png"> Sửa bếp gas</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/light.png"> Lắp bóng đèn</label>
+                        
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/ceiling_fan.png"> Lắp quạt trần</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/drain.png"> Thông tắc cống</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/lock.png"> Sửa khóa cửa</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/drill.png"> Khoan treo kệ</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/paint.png"> Sơn sửa nhỏ</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/curtains.png"> Lắp rèm cửa</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/Waterheater.png"> Sửa bình nóng lạnh</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/pump.png"> Sửa máy bơm</label>
+
+                        <label><input type="checkbox" class="service">
+                        <img src="assets/images/camera.png"> Lắp camera gia đình</label>
+
+                    </div>
+
+                    <!-- Nhập thêm -->
+                    <input type="text" id="otherInput"
+                        placeholder="Nhập thêm danh mục khác (nếu có)">
+                </div>
+
+                <!-- Buttons -->
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">Lưu hồ sơ</button>
+                    <button type="button" class="cancel-btn" id="cancelBtn">Hủy</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <script src="js/profile.js"></script>
+</body>
+</html>
