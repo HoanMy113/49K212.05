@@ -30,7 +30,7 @@
                 </div>
 
                 <!-- Đã đăng nhập -->
-                <div class="nav-user">
+                <div class="nav-user" id="navUser" style="display:none;">
 
                     <!-- Notification icon -->
                     <div class="nav-icon">
@@ -40,9 +40,10 @@
                     <!-- User dropdown -->
                     <div class="user-dropdown">
 
-                        <img id="userAvatar" 
-                            src="assets/images/user.png" 
-                            class="user-avatar" />
+                        <button class="user-btn" id="userAvatar">
+                            <img src="assets/images/user.png" class="user-avatar">
+                            <span id="username">Người dùng</span>
+                        </button>
 
                         <div class="dropdown-menu">
                             <a href="#">
@@ -69,169 +70,178 @@
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="container text-center">
+    <main>
+        <section class="hero">
+            <div class="container text-center">
 
-            <h1 class="hero-title">
-                <span class="static-text">Sửa chữa nhà cửa,</span>
-                <span class="text-slider">
-                    <span class="slider-track">
-                        <span class="slide">thật dễ dàng.</span>
-                        <span class="slide">nhanh chóng.</span>
-                        <span class="slide">tiện lợi.</span>
-                        <span class="slide">thật dễ dàng.</span>
-                        <span class="slide">nhanh chóng.</span>
-                        <span class="slide">tiện lợi.</span>
+                <h1 class="hero-title">
+                    <span class="static-text">Sửa chữa nhà cửa,</span>
+                    <span class="text-slider">
+                        <span class="slider-track">
+                            <span class="slide">thật dễ dàng.</span>
+                            <span class="slide">nhanh chóng.</span>
+                            <span class="slide">tiện lợi.</span>
+                            <span class="slide">thật dễ dàng.</span>
+                            <span class="slide">nhanh chóng.</span>
+                            <span class="slide">tiện lợi.</span>
+                        </span>
                     </span>
-                </span>
-            </h1>
+                </h1>
 
-            <div class="search-bar-wrapper">
-                <div class="search-bar">
+                <div class="search-bar-wrapper">
+                    <div class="search-bar">
 
-                    <div class="search-section" id="categoryToggle">
-                        <img src="assets/images/menu.png" class="search-icon">
-                        <span id="categoryText">Danh mục sửa chữa</span>
-                        <img src="assets/images/arrow-down.png" class="arrow-icon" id="categoryArrow">
-                    </div>
-
-                    <div class="divider"></div>
-
-                    <div class="search-section location-shift" id="locationToggle">
-                        <img src="assets/images/location.png" class="search-icon">
-                        <span id="locationText">Địa điểm</span>
-                        <img src="assets/images/arrow-down.png" class="arrow-icon" id="locationArrow">
-                    </div>
-
-                    <button class="search-main-btn">Tìm thợ</button>
-                </div>
-
-                <div class="category-dropdown">
-
-                    <div class="category-header">
-                        <div class="search-input full">
-                            <input type="text" id="categorySearch" placeholder="Nhập danh mục cần sửa chữa">
+                        <div class="search-section" id="categoryToggle">
+                            <img src="assets/images/menu.png" class="search-icon">
+                            <span id="categoryText">Danh mục sửa chữa</span>
+                            <img src="assets/images/arrow-down.png" class="arrow-icon" id="categoryArrow">
                         </div>
-                    </div>
 
-                    <div class="category-body">
+                        <div class="divider"></div>
 
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa điện
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa ống nước
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa máy lạnh
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa máy giặt
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa tủ lạnh
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa bếp gas
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Lắp bóng đèn
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Lắp quạt trần
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Thông tắc cống
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa khóa cửa
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Khoan treo kệ
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sơn sửa nhỏ
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Lắp rèm cửa
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa nóng lạnh
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Sửa máy bơm
-                        </label>
-
-                        <label class="category-item">
-                            <input type="checkbox">
-                            Lắp camera
-                        </label>
-                    </div>
-
-                    <div class="category-footer">
-                        <span class="clear-category">Bỏ tất cả</span>
-                        <button class="apply-category">Áp dụng</button>
-                    </div>
-
-                </div>
-
-                <!-- LOCATION PANEL -->
-                <div class="dropdown-panel location-popup" id="locationPanel">
-
-                    <!-- HEADER SEARCH -->
-                    <div class="location-header">
-                        <div class="search-input">
-                            <input type="text" placeholder="Nhập Tỉnh/Thành phố">
+                        <div class="search-section location-shift" id="locationToggle">
+                            <img src="assets/images/location.png" class="search-icon">
+                            <span id="locationText">Địa điểm</span>
+                            <img src="assets/images/arrow-down.png" class="arrow-icon" id="locationArrow">
                         </div>
-                        <div class="search-input">
-                            <input type="text" placeholder="Nhập Phường/Xã/Quận/Huyện">
+
+                        <button class="search-main-btn">Tìm thợ</button>
+                    </div>
+
+                    <div class="category-dropdown">
+
+                        <div class="category-header">
+                            <div class="search-input full">
+                                <input type="text" id="categorySearch" placeholder="Nhập danh mục cần sửa chữa">
+                            </div>
                         </div>
+
+                        <div class="category-body">
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa điện
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa ống nước
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa máy lạnh
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa máy giặt
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa tủ lạnh
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa bếp gas
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Lắp bóng đèn
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Lắp quạt trần
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Thông tắc cống
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa khóa cửa
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Khoan treo kệ
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sơn sửa nhỏ
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Lắp rèm cửa
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa nóng lạnh
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Sửa máy bơm
+                            </label>
+
+                            <label class="category-item">
+                                <input type="checkbox">
+                                Lắp camera
+                            </label>
+                        </div>
+
+                        <div class="category-footer">
+                            <span class="clear-category">Bỏ tất cả</span>
+                            <button class="apply-category">Áp dụng</button>
+                        </div>
+
                     </div>
 
-                    <div class="location-body">
-                        <div class="province-column" id="provinceColumn"></div>
-                        <div class="district-column" id="districtColumn"></div>
-                    </div>
+                    <!-- LOCATION PANEL -->
+                    <div class="dropdown-panel location-popup" id="locationPanel">
 
-                    <div class="location-footer">
-                        <span class="clear-all" id="clearAll">Bỏ chọn tất cả</span>
-                        <button class="apply-btn" id="saveLocation">Áp dụng</button>
-                    </div>
+                        <!-- HEADER SEARCH -->
+                        <div class="location-header">
+                            <div class="search-input">
+                                <input type="text" placeholder="Nhập Tỉnh/Thành phố">
+                            </div>
+                            <div class="search-input">
+                                <input type="text" placeholder="Nhập Phường/Xã/Quận/Huyện">
+                            </div>
+                        </div>
 
+                        <div class="location-body">
+                            <div class="province-column" id="provinceColumn"></div>
+                            <div class="district-column" id="districtColumn"></div>
+                        </div>
+
+                        <div class="location-footer">
+                            <span class="clear-all" id="clearAll">Bỏ chọn tất cả</span>
+                            <button class="apply-btn" id="saveLocation">Áp dụng</button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
+
+    <footer class="footer">
+        © 2026 FixItNow - Website kết nối sửa chữa dân dụng tức thời
+    </footer>
 
     <script src="js/main.js"></script>
+
 </body>
+
 </html>
+

@@ -1,5 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+    /* ================= LOGIN DEMO ================= */
+
+    const loginBtn = document.getElementById("loginBtn");
+    const navGuest = document.querySelector(".nav-guest");
+    const navUser = document.getElementById("navUser");
+    const username = document.getElementById("username");
+
+    loginBtn.addEventListener("click", function(){
+
+        /*const user = "Người dùng"; // demo user*/
+
+        navGuest.style.display = "none";
+        navUser.style.display = "flex";
+
+        username.textContent = user;
+
+    });
+    
     const $ = (selector) => document.querySelector(selector);
     const $$ = (selector) => document.querySelectorAll(selector);
 

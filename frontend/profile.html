@@ -15,58 +15,60 @@
 
     <!-- ================= NAVBAR ================= -->
     <nav class="navbar-custom">
+
         <div class="container nav-wrapper">
+
+            <!-- Logo -->
             <div class="logo">FixItNow</div>
 
-            <div class="nav-actions">
+            <!-- Menu -->
+            <div class="nav-menu">
 
-                <!-- Nút Trang chủ -->
-                <a href="index.html" class="btn-home">
-                    <img src="assets/images/home.png" alt="">
-                    Trang chủ
+                <a href="index.html" class="nav-link">Trang chủ</a>
+
+                <a href="#" class="nav-link">
+                    Quản lý yêu cầu
                 </a>
 
-                <!-- Đã đăng nhập -->
-                <div class="nav-user">
+            </div>
 
-                    <!-- Notification icon -->
-                    <div class="nav-icon">
-                        <img src="assets/images/bell.png" alt="Thông báo">
-                    </div>
+            <!-- Right side -->
+            <div class="nav-actions">
 
-                    <!-- User dropdown -->
-                    <div class="user-dropdown">
+                <!-- Notification -->
+                <div class="nav-icon">
+                    <img src="assets/images/bell.png">
+                </div>
 
-                        <img id="userAvatar" 
-                            src="assets/images/user.png" 
-                            class="user-avatar" />
+                <!-- User -->
+                <div class="user-dropdown">
 
-                        <div class="dropdown-menu">
-                            <a href="#">
-                                <img src="assets/images/list.png" width="18">
-                                Quản lý yêu cầu
-                            </a>
+                    <div class="user-btn">
 
-                            <a href="profile.html">
-                                <img src="assets/images/avatar.png" width="18">
-                                Quản lý hồ sơ
-                            </a>
+                        <img src="assets/images/user.png"
+                            class="user-avatar">
 
-                            <a href="#" id="logoutBtn">
-                                <img src="assets/images/logout.png" width="18">
-                                Đăng xuất
-                            </a>
-                        </div>
+                        <span id="username">Người dùng</span>
 
                     </div>
 
                 </div>
 
+                <!-- Logout button -->
+                <button class="btn-login" id="logoutBtn">
+                    Đăng xuất
+                </button>
+
             </div>
+
         </div>
+
     </nav>
 
     <!-- ================= CONTENT ================= -->
+    <main>
+
+    </main>
     <section class="profile-wrapper">
 
         <div class="empty-profile-box">
@@ -193,7 +195,9 @@
 
         </div>
     </div>
-
+    <footer class="footer">
+        © 2026 FixItNow - Website kết nối sửa chữa dân dụng tức thời
+    </footer>
     <script src="js/profile.js"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 }
 body {
     font-family: 'Nunito', sans-serif;
-    background: #f8f9fa;
+    background: #B2D9B5FF;
     margin: 0;
 }
 
@@ -441,12 +441,50 @@ body {
     gap: 20px;
 }
 
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
+.user-info{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
 }
+
+/* USER BUTTON */
+.user-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:6px 14px;
+    border-radius:25px;
+
+    border:1.5px solid #d8d8d8;
+    background:white;
+
+    font-weight:600;
+    font-size:14px;
+
+    cursor:pointer;
+}
+
+.user-avatar{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+/* username */
+
+#username{
+    white-space:nowrap;
+}
+
+/* hover */
+
+.user-btn:hover{
+    border-color:#4e7d63;
+}
+
 
 .user-dropdown {
     position: relative;
@@ -485,6 +523,25 @@ body {
     display: flex;
 }
 
+/* ===== ICON CHUÔNG ===== */
+
+.nav-icon{
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:#f0f1f4;
+    cursor:pointer;
+}
+
+.nav-icon img{
+    width:20px;
+    height:20px;
+    object-fit:contain;
+}
+
 /* ================= FIX AUTH SIZE ================= */
 
 /* Button*/
@@ -495,25 +552,6 @@ body {
     padding: 0 18px;
     border-radius: 25px;
     font-size: 14px;
-}
-
-/* Icon bell + user cùng size */
-.nav-icon img,
-.user-avatar {
-    width: 22px;
-    height: 22px;
-}
-
-.nav-icon,
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #f0f1f4;
-    cursor: pointer;
 }
 
 /* Dropdown*/
@@ -557,3 +595,37 @@ body {
     background: #4e7d63;
     color: white;
 }
+
+body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+main{
+    flex:1;
+}
+
+/* ===== FIXITNOW FOOTER ===== */
+.footer{
+    background:#e9ecef;
+    text-align:center;
+    padding:15px;
+    font-size:13px;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+
