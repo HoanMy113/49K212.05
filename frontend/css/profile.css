@@ -19,7 +19,7 @@ body {
     border-radius: 28px;
     text-align: center;
     width: 650px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
 }
 
 .create-btn {
@@ -44,7 +44,7 @@ body {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     justify-content: center;
     align-items: center;
     z-index: 3000;
@@ -115,7 +115,7 @@ body {
 .form-group input:focus,
 .form-group textarea:focus {
     border-color: #4e7d63;
-    box-shadow: 0 0 0 3px rgba(78,125,99,0.12);
+    box-shadow: 0 0 0 3px rgba(78, 125, 99, 0.12);
     outline: none;
 }
 
@@ -240,7 +240,7 @@ button,
     width: 200px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
     padding: 10px 0;
     display: none;
     z-index: 1000;
@@ -262,4 +262,114 @@ button,
 
 .dropdown-menu a:hover {
     background: #f5f5f5;
+}
+
+/* ================= EXISTING PROFILE BOX ================= */
+.existing-profile-box {
+    background: white;
+    padding: 45px;
+    border-radius: 24px;
+    width: 650px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    margin: 0 auto;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 25px;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.profile-hero-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #f5f7f6;
+    padding: 6px;
+    border: 1px solid #eef6f1;
+}
+
+.profile-title-container h2 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    color: #222;
+}
+
+.role-badge {
+    display: inline-block;
+    background-color: #eef6f1;
+    color: #4e7d63;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.edit-profile-btn {
+    position: absolute;
+    top: 5px;
+    right: 0;
+    padding: 10px 24px;
+    border-radius: 30px;
+    border: 1.5px solid #4e7d63;
+    background: white;
+    color: #4e7d63;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.edit-profile-btn:hover {
+    background: #4e7d63;
+    color: white;
+}
+
+.info-section {
+    margin-bottom: 24px;
+}
+
+.info-section h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #777;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info-section p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.service-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.service-badge {
+    background: #f5f7f6;
+    color: #4e7d63;
+    padding: 8px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: 0.2s ease;
+}
+
+.service-badge:hover {
+    border-color: #4e7d63;
+    background: #eef6f1;
 }
