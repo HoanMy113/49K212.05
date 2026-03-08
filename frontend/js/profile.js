@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Hardcode user ID = 1 for demo purposes
     const userId = 1;
-    const apiUrl = `http://localhost:5111/api/profiles/${userId}`;
+    const apiUrl = `http://localhost:5112/api/profiles/${userId}`;
 
     // Display elements
     const emptyBox = document.getElementById("emptyProfileBox");
@@ -197,22 +197,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let isValid = true;
 
-            // Name: No special characters (allow letters, numbers, spaces, vi accents)
-            const nameRegex = /^[a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+$/;
-            if (!nameRegex.test(nameVal)) {
+            // Name Validation
+            if (nameVal === "") {
+                nameError.textContent = "Tên không được bỏ trống. Vui lòng nhập lại";
                 nameError.style.display = "block";
                 isValid = false;
             } else {
-                nameError.style.display = "none";
+                const nameRegex = /^[a-zA-Z0-9\sÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+$/;
+                if (!nameRegex.test(nameVal)) {
+                    nameError.textContent = "Tên không được chứa ký tự đặc biệt. Vui lòng nhập lại";
+                    nameError.style.display = "block";
+                    isValid = false;
+                } else {
+                    nameError.style.display = "none";
+                }
             }
 
-            // Phone: Only digits, length up to 10
-            const phoneRegex = /^\d{1,10}$/;
-            if (!phoneRegex.test(phoneVal)) {
+            // Phone Validation
+            if (phoneVal === "") {
+                phoneError.textContent = "Số điện thoại không được bỏ trống. Vui lòng nhập lại";
                 phoneError.style.display = "block";
                 isValid = false;
             } else {
-                phoneError.style.display = "none";
+                const phoneRegex = /^\d{1,10}$/;
+                if (!phoneRegex.test(phoneVal)) {
+                    phoneError.textContent = "Số điện thoại chỉ bao gồm số và tối đa 10 số. Vui lòng nhập lại";
+                    phoneError.style.display = "block";
+                    isValid = false;
+                } else {
+                    phoneError.style.display = "none";
+                }
             }
 
             if (!isValid) return; // Stop submission
