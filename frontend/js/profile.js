@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Hardcode user ID = 1 for demo purposes
     const userId = 1;
-    const apiUrl = `http://localhost:5112/api/profiles/${userId}`;
+    const apiUrl = `http://localhost:5111/api/profiles/${userId}`;
 
     // Display elements
     const emptyBox = document.getElementById("emptyProfileBox");
@@ -265,7 +265,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             } catch (error) {
                 console.error("Error saving profile:", error);
-                alert('Lỗi kết nối máy chủ.');
+                
+                // Detailed debug info
+                let errorMsg = error.toString();
+                if (error instanceof TypeError) {
+                   errorMsg += " (This is often a CORS or Network connection issue)";
+                }
+                alert('Lỗi kết nối máy chủ.\nChi tiết: ' + errorMsg);
             }
         });
     }

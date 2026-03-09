@@ -21,7 +21,7 @@ builder.Services.AddScoped<IProfileService, ProfileService>();
 // Configure CORS for Frontend access
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyHeader()
@@ -40,10 +40,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors();
+app.UseRouting();
+
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
 app.Run();
