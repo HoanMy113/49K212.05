@@ -34,4 +34,11 @@ public class ProfilesController : ControllerBase
         var updatedProfile = await _profileService.UpdateProfileAsync(id, request);
         return Ok(updatedProfile);
     }
+
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchProfiles([FromQuery] string? category, [FromQuery] string? location)
+    {
+        var profiles = await _profileService.SearchProfilesAsync(category, location);
+        return Ok(profiles);
+    }
 }

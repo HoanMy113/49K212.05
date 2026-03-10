@@ -36,8 +36,39 @@ public class ProfileService : IProfileService
         profile.Address = request.Address;
         profile.Description = request.Description;
         profile.Services = request.Services;
+        profile.Location = request.Location;
+        profile.Rating = request.Rating;
 
         await _context.SaveChangesAsync();
         return profile;
+    }
+
+    public async Task<List<WorkerProfile>> SearchProfilesAsync(string? category, string? location)
+    {
+        var query = _context.WorkerProfiles.AsQueryable();
+
+        // 1. Fetch all to memory if needed, or query directly. In-memory DB evaluates locally anyway.
+        // For standard databases, it's better to fetch all and filter if using complex string splits, 
+        // but EF Core handles basic `Contains` translating to `LIKE`.
+        var workers = await query.ToListAsync();
+
+        if (!string.IsNullOrEmpty(category))
+        {
+            var categories = category.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            workers = workers.Where(w =>
+                w.Services != null && 
+                categories.Any(c => w.Services.Any(s => s.Contains(c, StringComparison.OrdinalIgnoreCase) || c.Contains(s, StringComparison.OrdinalIgnoreCase)))
+            ).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(location))
+        {
+            workers = workers.Where(w =>
+                !string.IsNullOrEmpty(w.Location) &&
+                (w.Location.Contains(location, StringComparison.OrdinalIgnoreCase) || location.Contains(w.Location, StringComparison.OrdinalIgnoreCase))
+            ).ToList();
+        }
+
+        return workers;
     }
 }

@@ -10,4 +10,7 @@ public class WorkerProfile
     
     // Services like "Sửa điện", "Sửa nước", ...
     public List<string> Services { get; set; } = new List<string>();
+
+    public string Location { get; set; } = string.Empty;
+    public double Rating { get; set; } = 0.0;
 }
