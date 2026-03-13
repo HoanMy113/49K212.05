@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | FixItNow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8faf9;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-wrapper {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .auth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(78, 125, 99, 0.1);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-header h1 {
+            color: #4e7d63;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .role-tabs {
+            display: flex;
+            background: #f0f1f4;
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .role-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s;
+        }
+        .role-tab.active {
+            background: white;
+            color: #4e7d63;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            border-color: #4e7d63;
+            outline: none;
+        }
+        .auth-btn {
+            width: 100%;
+            background: #4e7d63;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .auth-btn:hover {
+            background: #3f6650;
+        }
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+        .auth-links a {
+            color: #4e7d63;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        #loginError {
+            color: #d9534f;
+            background: #fdf7f7;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>FixItNow</h1>
+                <p>Chào mừng bạn quay trở lại!</p>
+            </div>
+
+            <div class="role-tabs" id="roleTabs">
+                <div class="role-tab active" data-role="Customer">Khách hàng</div>
+                <div class="role-tab" data-role="Repairman">Thợ sửa chữa</div>
+            </div>
+
+            <div id="loginError">Số điện thoại hoặc mật khẩu không chính xác.</div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" id="phone" class="form-control" placeholder="Nhập số điện thoại" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu" required>
+                </div>
+                <button type="submit" class="auth-btn">Đăng nhập</button>
+            </form>
+
+            <div class="auth-links">
+                Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

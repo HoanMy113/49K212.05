@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh giá của tôi | FixItNow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .feedback-header h2 {
+            margin: 0;
+            font-size: 28px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .rating-summary-card {
+            background: linear-gradient(135deg, #4e7d63 0%, #3f6650 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(78, 125, 99, 0.2);
+        }
+        .avg-rating {
+            text-align: center;
+        }
+        .avg-rating .number {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .stars {
+            color: #f5a623;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+        .summary-details {
+            flex: 1;
+        }
+        .summary-details h3 {
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+        .summary-details p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .feedback-list {
+            display: grid;
+            gap: 20px;
+        }
+        .feedback-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-left: 4px solid #4e7d63;
+        }
+        .feedback-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .feedback-user .name {
+            font-weight: 700;
+            color: #333;
+        }
+        .feedback-date {
+            font-size: 13px;
+            color: #888;
+            margin-left: auto;
+        }
+        .feedback-text {
+            color: #555;
+            line-height: 1.6;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 12px;
+            color: #888;
+        }
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4e7d63;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar-placeholder"></div>
+
+    <main class="container py-4">
+        <a href="index.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+
+        <div class="feedback-header">
+            <h2><i class="fas fa-star" style="color: #f5a623;"></i> Đánh giá của tôi</h2>
+        </div>
+
+        <div id="ratingSummary" class="rating-summary-card" style="display: none;">
+            <div class="avg-rating">
+                <div class="number" id="avgStars">0.0</div>
+                <div class="stars" id="starIcons"></div>
+            </div>
+            <div class="summary-details">
+                <h3 id="workerNameDisplay">---</h3>
+                <p id="totalReviewsCount">0 đánh giá từ khách hàng</p>
+            </div>
+        </div>
+
+        <div id="feedbackList" class="feedback-list">
+            <div class="empty-state">
+                <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                <p>Bạn chưa có đánh giá nào từ khách hàng.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-5">
+        <div class="container text-center">
+            <p>&copy; 2026 FixItNow - Website kết nối sửa chữa dân dụng tức thời</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script src="js/worker-feedback.js"></script>
+</body>
+</html>

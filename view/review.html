@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh giá dịch vụ | FixItNow</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .star-rating {
+            font-size: 32px;
+            color: #ddd;
+            cursor: pointer;
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .star-rating i.active {
+            color: #f5a623;
+        }
+        .review-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="navbar-placeholder"></div>
+
+    <main class="container py-5">
+        <div class="review-card">
+            <h3 class="text-center mb-4">Đánh giá của bạn</h3>
+            <p class="text-center text-muted">Cảm ơn bạn đã tin dùng FixItNow. Hãy chia sẻ trải nghiệm của bạn về dịch vụ này.</p>
+            <hr>
+            
+            <form id="reviewForm">
+                <div class="mb-4 text-center">
+                    <label class="d-block mb-2 font-weight-bold">Chất lượng dịch vụ</label>
+                    <div class="star-rating justify-content-center" id="starRating">
+                        <i class="fas fa-star" data-rating="1"></i>
+                        <i class="fas fa-star" data-rating="2"></i>
+                        <i class="fas fa-star" data-rating="3"></i>
+                        <i class="fas fa-star" data-rating="4"></i>
+                        <i class="fas fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label font-weight-bold">Bình luận của bạn</label>
+                    <textarea id="comment" class="form-control" rows="4" placeholder="Ví dụ: Thợ nhiệt tình, sửa chữa nhanh chóng..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100 py-3 font-weight-bold">Gửi đánh giá</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/review.js"></script>
+</body>
+</html>
