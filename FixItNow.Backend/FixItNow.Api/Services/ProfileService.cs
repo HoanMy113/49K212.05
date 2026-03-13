@@ -26,8 +26,8 @@ public class ProfileService : IProfileService
         
         if (profile == null)
         {
-            // For now, if profile doesn't exist, we will create a new one to simulate a profile creation via update payload logic matching the frontend form
-            profile = new WorkerProfile { Id = id };
+            // Create new profile — let SQL Server auto-generate the ID
+            profile = new WorkerProfile();
             _context.WorkerProfiles.Add(profile);
         }
 
@@ -35,8 +35,8 @@ public class ProfileService : IProfileService
         profile.PhoneNumber = request.PhoneNumber;
         profile.Address = request.Address;
         profile.Description = request.Description;
-        profile.Services = request.Services;
-        profile.Location = request.Location;
+        profile.Services = request.Services ?? new List<string>();
+        profile.Location = request.Location ?? string.Empty;
         profile.Rating = request.Rating;
 
         await _context.SaveChangesAsync();
