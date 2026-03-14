@@ -17,6 +17,7 @@ public class LoginDto
 {
     public string Phone { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
+    public string Role { get; set; } = "Customer"; // Verify requested role against actual role
 }
 
 public class UserUpdateDto

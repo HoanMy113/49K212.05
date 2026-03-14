@@ -41,6 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = "index.html";
                 }
             } else {
+                const errorText = await response.text();
+                loginError.textContent = errorText || 'Số điện thoại hoặc mật khẩu không chính xác.';
                 loginError.style.display = 'block';
             }
         } catch (error) {
