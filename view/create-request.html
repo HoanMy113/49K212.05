@@ -6,8 +6,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <!-- FontAwesome 6 -->
+    <!-- FontAwesome 6 & Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .form-card {
             background: #fff;
@@ -65,11 +66,16 @@
 <body>
 
     <!-- ================= NAVBAR ================= -->
-    <nav class="navbar-custom">
-        <div class="container nav-wrapper">
-            <a href="index.html" class="logo" style="text-decoration: none; color: inherit;">FixItNow</a>
+    <nav class="navbar-custom bg-white border-bottom shadow-sm">
+        <div class="container nav-wrapper d-flex justify-content-between align-items-center">
+            <!-- Khối Logo (Trái) -->
+            <a href="index.html" class="logo d-flex align-items-center gap-2 text-dark text-decoration-none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                <span class="fs-4 fw-bold">FixItNow</span>
+            </a>
 
-            <div class="nav-actions">
+            <!-- Khối Nav Actions (Phải) -->
+            <div class="nav-actions d-flex align-items-center gap-3">
 
                 <!-- Chưa đăng nhập -->
                 <div class="nav-guest">
@@ -78,20 +84,20 @@
                 </div>
 
                 <!-- Đã đăng nhập -->
-                <div class="nav-user" id="navUser" style="display:none; align-items: center;">
+                <div class="nav-user flex-row align-items-center gap-3" id="navUser" style="display:none !important;">
 
                     <!-- Notification icon -->
-                    <a href="notifications.html" class="nav-icon" style="text-decoration:none;">
-                        <i class="fa-regular fa-bell fa-lg text-secondary"></i>
+                    <a href="notifications.html" class="nav-icon d-flex align-items-center justify-content-center p-0 m-0 text-decoration-none" style="position:relative;">
+                        <img src="assets/images/bell.png" alt="Thông báo" style="width:24px; height:24px; object-fit: contain;">
                     </a>
 
                     <!-- User dropdown -->
-                    <div class="user-dropdown">
+                    <div class="user-dropdown position-relative">
 
-                        <button class="user-btn" id="userAvatar">
-                            <i class="fa-solid fa-circle-user fa-lg me-2 text-secondary"></i>
-                            <span id="username">Người dùng</span>
-                        </button>
+                        <div class="user-btn d-flex align-items-center gap-2" id="userAvatar" style="cursor:pointer; background:none; border:none; padding:0;">
+                            <img src="assets/images/user.png" class="user-avatar shadow-sm border" style="width:34px; height:34px; border-radius:50%; object-fit:cover;">
+                            <span class="fw-semibold text-dark fs-6" id="username">Người dùng</span>
+                        </div>
 
                         <div class="dropdown-menu">
                             <!-- WORKER MENU (ẩn mặc định, bật bằng JS) -->
@@ -120,8 +126,8 @@
                                     Đặt thợ sửa chữa
                                 </a>
                                 <a href="my-requests.html">
-                                    <i class="fa-solid fa-clock-rotate-left me-2"></i>
-                                    Lịch sử yêu cầu
+                                    <i class="fa-solid fa-clipboard-list me-2"></i>
+                                    Yêu cầu của tôi
                                 </a>
                                 <div class="dropdown-divider"></div>
                             </div>
@@ -131,20 +137,17 @@
                                 <i class="fa-solid fa-house me-2"></i>
                                 Trang chủ
                             </a>
-                            <a href="account.html">
+                            <a href="customer-profile.html">
                                 <i class="fa-solid fa-user-gear me-2"></i>
-                                Tài khoản & Cài đặt
+                                Quản lý hồ sơ
                             </a>
                             <a href="#" id="logoutBtn">
-                                <i class="fa-solid fa-arrow-right-from-bracket me-2 text-danger"></i>
+                                <i class="fa-solid fa-right-from-bracket me-2 text-danger"></i>
                                 Đăng xuất
                             </a>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
         </div>
     </nav>
@@ -152,6 +155,7 @@
             
 
     <main class="container my-4">
+        <a href="index.html" class="text-decoration-none text-secondary d-inline-flex align-items-center mb-4 fw-semibold transition-all hover-translate"><i class="bi bi-arrow-left me-2"></i> Quay lại trang chủ</a>
         <div class="row justify-content-center">
             <div class="col-lg-7">
 
@@ -250,14 +254,16 @@
                 </div>
 
                 <!-- SUCCESS -->
-                <div class="success-box" id="successBox" style="display: none;">
-                    <div style="font-size: 50px; margin-bottom: 10px;"><i class="fa-solid fa-check text-success"></i></div>
-                    <h4>Yêu cầu đã được tạo thành công!</h4>
-                    <p class="text-muted">Mã yêu cầu: <strong id="requestId"></strong></p>
-                    <p class="text-muted">Thợ sửa sẽ liên hệ với bạn trong thời gian sớm nhất.</p>
-                    <div class="d-flex gap-3 justify-content-center mt-4">
-                        <a href="my-requests.html" class="btn-submit" style="width: auto; text-decoration: none; display: inline-block;"><i class="fa-solid fa-clipboard-list text-primary"></i> Xem yêu cầu</a>
-                        <a href="create-request.html" class="btn-home" style="text-decoration: none;">+ Tạo yêu cầu mới</a>
+                <div class="bg-white rounded-4 shadow border-0 p-4 p-md-5 text-center mt-4" id="successBox" style="display: none;">
+                    <div class="mb-3">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 80px;"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-3">Yêu cầu đã được tạo thành công!</h3>
+                    <p class="text-muted fs-5 mb-2">Mã yêu cầu: <strong id="requestId" class="text-dark"></strong></p>
+                    <p class="text-muted mb-4 fs-6">Thợ sửa sẽ liên hệ với bạn trong thời gian sớm nhất.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="my-requests.html" class="btn btn-success fw-bold px-4 py-2 shadow-sm" style="border-radius: 8px;"><i class="bi bi-clipboard-check text-white me-2"></i> Xem yêu cầu</a>
+                        <a href="create-request.html" class="btn btn-outline-success fw-bold px-4 py-2" style="border-radius: 8px;"><i class="bi bi-plus-circle me-2"></i> Tạo yêu cầu mới</a>
                     </div>
                 </div>
 
