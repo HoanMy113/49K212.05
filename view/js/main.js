@@ -322,12 +322,50 @@ document.addEventListener("DOMContentLoaded", function () {
         if (target) handleLogout(e);
     });
 
+    // Auth-based Profile navigations
+    const navProfileLink = document.getElementById('navProfileLink');
+    if (navProfileLink) {
+        navProfileLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (sessionStorage.getItem('userRole') === 'Repairman') {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'customer-profile.html';
+            }
+        });
+    }
+    
+    const navProfileNav = document.getElementById('navProfileNav');
+    if (navProfileNav) {
+        navProfileNav.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (sessionStorage.getItem('userRole') === 'Repairman') {
+                window.location.href = 'profile.html';
+            } else {
+                window.location.href = 'customer-profile.html';
+            }
+        });
+    }
+    
+    const navManageRequests = document.getElementById('navManageRequests');
+    if (navManageRequests) {
+        navManageRequests.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'my-requests.html';
+        });
+    }
+    
+    // Helper to format VND
+    function formatVND(val) {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+    }
+
     /* CATEGORY DROPDOWN */
     const categoryToggle = $("#categoryToggle");
-    const categoryDropdown = $("#categoryDropdown");
+    const categoryDropdown = $(".category-dropdown");
     const categoryArrow = $("#categoryArrow");
     const categoryText = $("#categoryText");
-    const checkboxes = $$("#categoryDropdown input[type='checkbox']");
+    const categoryCheckboxes = document.querySelectorAll(".category-dropdown input[type='checkbox']");
 
     function closeCategoryDropdown() {
         if (!categoryDropdown) return;
@@ -353,25 +391,48 @@ document.addEventListener("DOMContentLoaded", function () {
         closeLocationPopup();
     });
 
-    checkboxes.forEach(cb => {
-        cb.addEventListener("change", () => {
+    // Category Apply Button Logic
+    const applyCat = document.querySelector('.apply-category');
+    if (applyCat) {
+        applyCat.addEventListener('click', () => {
             const selected = [];
-            checkboxes.forEach(c => { if (c.checked) selected.push(c.parentElement.textContent.trim()); });
-            if (categoryText) categoryText.innerText = selected.length > 0 ? selected.join(", ") : "Danh mục sửa chữa";
+            categoryCheckboxes.forEach(c => { if (c.checked) selected.push(c.parentElement.textContent.trim()); });
+            if (categoryText) {
+                if (selected.length === 0) categoryText.innerText = "Danh mục sửa chữa";
+                else if (selected.length === 1) categoryText.innerText = selected[0];
+                else categoryText.innerText = `Đã chọn ${selected.length} danh mục`;
+            }
+            closeCategoryDropdown();
         });
-    });
+    }
 
-    /* LOCATION POPUP */
+    // Category Clear All Logic
+    const clearCat = document.querySelector('.clear-category');
+    if (clearCat) {
+        clearCat.addEventListener('click', () => {
+            categoryCheckboxes.forEach(c => c.checked = false);
+            if (categoryText) categoryText.innerText = "Danh mục sửa chữa";
+        });
+    }
+
+    // Category Text Search Filtering
+    const searchCat = document.getElementById('categorySearch');
+    if (searchCat) {
+        searchCat.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.category-item');
+            items.forEach(item => {
+                const text = item.textContent.trim().toLowerCase();
+                item.style.display = text.includes(term) ? 'flex' : 'none';
+            });
+        });
+    }
+
+    /* ================= LOCATION POPUP ================= */
     const locationToggle = $("#locationToggle");
     const locationPanel = $("#locationPanel");
     const locationArrow = $("#locationArrow");
     const locationText = $("#locationText");
-    const provinceColumn = $("#provinceColumn");
-    const districtColumn = $("#districtColumn");
-    const saveLocationBtn = $("#saveLocation");
-    const clearAllBtn = $("#clearAll");
-    let selectedProvince = "";
-    let selectedDistrict = "";
 
     function closeLocationPopup() {
         if (!locationPanel) return;
@@ -394,158 +455,231 @@ document.addEventListener("DOMContentLoaded", function () {
             locationArrow.classList.toggle("fa-chevron-down", !willBeOpen);
         }
         closeCategoryDropdown();
+        if (willBeOpen && !window.provincesLoaded) loadProvinces();
     });
 
-    const locationDataLocal = {
-        "Hà Nội": ["Ba Đình", "Cầu Giấy", "Đống Đa", "Đông Anh", "Hoàn Kiếm", "Hoàng Mai"],
-        "Hồ Chí Minh": ["Quận 1", "Quận 3", "Quận 7"],
-        "Bình Dương": ["Thủ Dầu Một", "Dĩ An"],
-        "Bắc Ninh": [], "Đồng Nai": [], "Hưng Yên": [], "Hải Dương": [], "Đà Nẵng": [], "Hải Phòng": [],
-    };
+    // === LOCATION LOGIC (Provinces API) ===
+    let allProvinces = [];
+    let selectedProvinceName = '';
+    let selectedDistrictName = '';
 
-    function renderProvince() {
-        if (!provinceColumn) return;
-        provinceColumn.innerHTML = "";
-        Object.keys(locationDataLocal).forEach(p => {
-            const div = document.createElement("div");
-            div.className = "province-item";
-            div.textContent = p;
-            div.addEventListener("click", () => {
-                $$(".province-item").forEach(item => item.classList.remove("active"));
-                div.classList.add("active");
-                selectedProvince = p;
-                renderDistrict(p);
-            });
-            provinceColumn.appendChild(div);
+    async function loadProvinces() {
+        const pCol = document.getElementById('provinceColumn');
+        if(!pCol) return;
+        pCol.innerHTML = '<div class="text-center mt-4"><div class="spinner-border spinner-border-sm text-success"></div></div>';
+        try {
+            const res = await fetch('https://provinces.open-api.vn/api/?depth=2');
+            allProvinces = await res.json();
+            renderProvinces(allProvinces);
+            window.provincesLoaded = true;
+        } catch(e) {
+            pCol.innerHTML = '<div class="text-danger p-2">Lỗi tải vị trí</div>';
+        }
+    }
+
+    function renderProvinces(list) {
+        const pCol = document.getElementById('provinceColumn');
+        if(!pCol) return;
+        pCol.innerHTML = '';
+        list.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'province-item';
+            div.textContent = p.name;
+            div.onclick = () => {
+                document.querySelectorAll('.province-item').forEach(el => el.classList.remove('active'));
+                div.classList.add('active');
+                selectedProvinceName = p.name;
+                selectedDistrictName = '';
+                renderDistricts(p.districts);
+            };
+            pCol.appendChild(div);
         });
     }
 
-    function renderDistrict(province) {
-        if (!districtColumn) return;
-        districtColumn.innerHTML = "";
-        const districts = locationDataLocal[province] || [];
-        const allDiv = document.createElement("div");
-        allDiv.className = "district-item active";
-        allDiv.innerHTML = `<input type="checkbox"><span>Tất cả Quận/Huyện</span>`;
-        allDiv.addEventListener("click", () => {
-            $$(".district-item").forEach(d => d.classList.remove("active"));
-            allDiv.classList.add("active");
-            selectedDistrict = "";
-        });
-        districtColumn.appendChild(allDiv);
-        districts.forEach(d => {
-            const div = document.createElement("div");
-            div.className = "district-item";
-            div.innerHTML = `<input type="checkbox"><span>${d}</span>`;
-            div.addEventListener("click", () => {
-                $$(".district-item").forEach(d => d.classList.remove("active"));
-                div.classList.add("active");
-                selectedDistrict = d;
-            });
-            districtColumn.appendChild(div);
+    function renderDistricts(dList) {
+        const dCol = document.getElementById('districtColumn');
+        if(!dCol) return;
+        dCol.innerHTML = '';
+        dList.forEach(d => {
+            const lbl = document.createElement('label');
+            lbl.className = 'district-item';
+            lbl.style.display = 'flex';
+            lbl.style.alignItems = 'center';
+            lbl.style.gap = '10px';
+            lbl.innerHTML = `<input type="radio" name="districtRadio" value="${d.name}"> <span>${d.name}</span>`;
+            lbl.querySelector('input').onchange = () => {
+                selectedDistrictName = d.name;
+            };
+            dCol.appendChild(lbl);
         });
     }
 
-    saveLocationBtn?.addEventListener("click", () => {
-        if (locationText) locationText.innerText = selectedProvince ? (selectedDistrict ? `${selectedProvince}, ${selectedDistrict}` : selectedProvince) : "Địa điểm";
-        closeLocationPopup();
-    });
+    // Location Apply
+    const applyLoc = document.getElementById('saveLocation');
+    const clearLoc = document.getElementById('clearAll');
+    
+    if(applyLoc) {
+        applyLoc.addEventListener('click', () => {
+            if(selectedProvinceName) {
+                let txt = selectedProvinceName;
+                if(selectedDistrictName) txt += `, ${selectedDistrictName}`;
+                if(locationText) locationText.textContent = txt;
+                // Save globally for search button
+                window.selectedProvince = selectedProvinceName;
+                window.selectedDistrict = selectedDistrictName;
+            }
+            if(locationPanel) locationPanel.style.display = 'none';
+        });
+    }
 
-    clearAllBtn?.addEventListener("click", () => {
-        selectedProvince = ""; selectedDistrict = "";
-        $$(".province-item").forEach(p => p.classList.remove("active"));
-        if (districtColumn) districtColumn.innerHTML = "";
-    });
+    if(clearLoc) {
+        clearLoc.addEventListener('click', () => {
+            selectedProvinceName = '';
+            selectedDistrictName = '';
+            window.selectedProvince = '';
+            window.selectedDistrict = '';
+            document.querySelectorAll('.province-item').forEach(el => el.classList.remove('active'));
+            const dCol = document.getElementById('districtColumn');
+            if(dCol) dCol.innerHTML = '';
+            if(locationText) locationText.textContent = 'Địa điểm';
+        });
+    }
 
-    renderProvince();
+    // Location Search Filters
+    const locInputs = document.querySelectorAll('.location-header .search-input input');
+    if(locInputs.length >= 2) {
+        // Province Search
+        locInputs[0].addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allProvinces.filter(p => p.name.toLowerCase().includes(term));
+            renderProvinces(filtered);
+            const dCol = document.getElementById('districtColumn');
+            if(dCol) dCol.innerHTML = '';
+            selectedProvinceName = '';
+            selectedDistrictName = '';
+        });
+        // District Search (client side filtering of currently visible districts)
+        locInputs[1].addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            document.querySelectorAll('.district-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if(text.includes(term)) item.style.display = 'flex';
+                else item.style.display = 'none';
+            });
+        });
+    }
 
     /* SEARCH LOGIC */
-    const searchBtn = $(".search-main-btn");
+    const searchBtn = document.querySelector(".search-main-btn");
     let searchWorkers = [];
     const selectedWorkerIds = new Set();
     const searchItemsPerPage = 6;
     let currentSearchPage = 1;
 
-    searchBtn?.addEventListener("click", async function () {
-        closeLocationPopup();
-        closeCategoryDropdown();
-        
-        if (sessionStorage.getItem("isLoggedIn") !== "true") {
-            showModal("Vui lòng đăng nhập để tìm kiếm và đặt thợ sửa chữa.", "warning", {
-                buttonText: "Đăng nhập",
-                onClose: () => window.location.href = "login.html"
-            });
-            return;
-        }
-
-        const selectedCategories = [];
-        checkboxes.forEach(cb => { if (cb.checked) selectedCategories.push(cb.parentElement.textContent.trim()); });
-        const locationStr = selectedProvince ? (selectedDistrict ? `${selectedProvince}, ${selectedDistrict}` : selectedProvince) : "";
-
-        const params = new URLSearchParams();
-        if (selectedCategories.length > 0) params.append("category", selectedCategories.join(","));
-        if (locationStr) params.append("location", locationStr);
-
-        let resultsSection = document.getElementById("searchResults");
-        if (!resultsSection) {
-            resultsSection = document.createElement("section");
-            resultsSection.id = "searchResults";
-            resultsSection.className = "search-results container my-5";
-            document.querySelector("main").appendChild(resultsSection);
-        }
-        resultsSection.innerHTML = `<div class="text-center"><div class="spinner-border text-success"></div><p>Đang tìm kiếm...</p></div>`;
-
-        try {
-            const res = await fetch(`${API_BASE_URL}/api/profiles/search?${params.toString()}`);
-            const data = await res.json();
-            if (!data || data.length === 0) {
-                resultsSection.innerHTML = `<div class="alert alert-warning text-center">Chưa có dữ liệu thợ phù hợp.</div>`;
+    if (searchBtn) {
+        searchBtn.addEventListener("click", async function (e) {
+            e.preventDefault();
+            closeLocationPopup();
+            closeCategoryDropdown();
+            
+            if (sessionStorage.getItem("isLoggedIn") !== "true") {
+                alert("Vui lòng đăng nhập để tìm kiếm và đặt thợ sửa chữa.");
+                window.location.href = "login.html";
                 return;
             }
 
-            await Promise.all(data.map(async (worker) => {
-                try {
-                    const rRes = await fetch(`${API_BASE_URL}/api/reviews/worker/${worker.id}`);
-                    if (rRes.ok) {
-                        const rData = await rRes.json();
-                        worker.displayRating = rData.averageRating != null ? parseFloat(rData.averageRating) : (worker.rating || 0);
-                    } else worker.displayRating = worker.rating || 0;
-                } catch { worker.displayRating = worker.rating || 0; }
-            }));
-
-            searchWorkers = data;
-            resultsSection.innerHTML = `
-                <h3 class="fw-bold mb-3">Danh sách thợ phù hợp (${data.length})</h3>
-                <div class="d-flex justify-content-between mb-3">
-                    <label style="cursor:pointer;"><input type="checkbox" id="selectAllWorkers"> Chọn tất cả</label>
-                    <span id="selectedCount"></span>
-                </div>
-                <div class="row g-4" id="resultsGrid"></div>
-                <div id="searchPagination" class="mt-4"></div>
-            `;
+            const selectedCategories = [];
+            categoryCheckboxes.forEach(cb => { if (cb.checked) selectedCategories.push(cb.parentElement.textContent.trim()); });
+            const params = new URLSearchParams();
+            if (selectedCategories.length > 0) params.append("category", selectedCategories.join(","));
             
-            let fab = document.getElementById("multiSelectFab");
-            if (!fab) {
-                fab = document.createElement("button");
-                fab.id = "multiSelectFab";
-                fab.style.cssText = "position:fixed; bottom:30px; right:30px; background:#4e7d63; color:#fff; border:none; padding:14px 28px; border-radius:50px; font-weight:800; z-index:9990; display:none;";
-                fab.onclick = () => window.location.href = `create-request.html?workers=${Array.from(selectedWorkerIds).join(",")}`;
-                document.body.appendChild(fab);
+            const locProv = window.selectedProvince || "";
+            const locDist = window.selectedDistrict || "";
+            const locationStr = locProv ? (locDist ? `${locProv}, ${locDist}` : locProv) : "";
+            
+            if (locationStr) params.append("location", locationStr);
+
+            let resultsSection = document.getElementById("searchResults");
+            if (!resultsSection) {
+                resultsSection = document.createElement("section");
+                resultsSection.id = "searchResults";
+                resultsSection.className = "search-results container mt-0 mb-4";
+                document.querySelector("main").appendChild(resultsSection);
             }
+            resultsSection.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <h5 style="color:#2c3e50; font-weight:700;">Đang tìm kiếm thợ tốt nhất cho bạn...</h5>
+                </div>`;
 
-            document.getElementById("selectAllWorkers")?.addEventListener("change", function() {
-                document.querySelectorAll(".worker-select-cb").forEach(cb => {
-                    cb.checked = this.checked;
-                    if (this.checked) selectedWorkerIds.add(cb.dataset.workerId); else selectedWorkerIds.delete(cb.dataset.workerId);
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/profiles/search?${params.toString()}`);
+                const data = await res.json();
+                if (!data || data.length === 0) {
+                    resultsSection.innerHTML = `
+                        <div class="text-center py-5" style="background:white; border-radius:20px; box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+                            <i class="fa-solid fa-face-frown text-muted" style="font-size:64px; margin-bottom:20px; opacity:0.5;"></i>
+                            <h4 style="color:#2c3e50; font-weight:800;">Không tìm thấy thợ phù hợp</h4>
+                            <p style="color:#777; font-size:16px;">Vui lòng thử chọn danh mục hoặc địa điểm khác.</p>
+                        </div>`;
+                    return;
+                }
+
+                await Promise.all(data.map(async (worker) => {
+                    try {
+                        const rRes = await fetch(`${API_BASE_URL}/api/reviews/worker/${worker.id}`);
+                        if (rRes.ok) {
+                            const rData = await rRes.json();
+                            worker.displayRating = rData.averageRating != null ? parseFloat(rData.averageRating) : (worker.rating || 0);
+                        } else worker.displayRating = worker.rating || 0;
+                    } catch { worker.displayRating = worker.rating || 0; }
+                }));
+
+                searchWorkers = data;
+                resultsSection.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-end mb-3 border-bottom pb-2">
+                        <div>
+                            <h2 style="font-weight:800; color:#2c3e50; margin:0; font-size:22px;"><i class="fa-solid fa-users text-success me-2"></i> Danh sách thợ phù hợp</h2>
+                            <p style="color:#666; font-size:14px; margin:4px 0 0 0;">Tìm thấy <strong>${data.length}</strong> thợ dựa trên lựa chọn của bạn</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2 bg-white p-2 px-3 rounded-3 shadow-sm">
+                        <label style="cursor:pointer; font-weight:700; color:#2c3e50; display:flex; align-items:center; gap:10px; font-size:14px;">
+                            <input type="checkbox" id="selectAllWorkers" style="width:18px; height:18px;"> Chọn tất cả thợ
+                        </label>
+                        <span id="selectedCount" style="font-weight:700; color:#e67e22; font-size:14px;"></span>
+                    </div>
+                    
+                    <div class="row g-3" id="resultsGrid"></div>
+                    <div id="searchPagination" class="mt-3 d-flex justify-content-center"></div>
+                `;
+                
+                let fab = document.getElementById("multiSelectFab");
+                if (!fab) {
+                    fab = document.createElement("button");
+                    fab.id = "multiSelectFab";
+                    fab.style.cssText = "position:fixed; bottom:40px; right:40px; background:linear-gradient(135deg, #4e7d63, #3a9d6e); color:#fff; border:none; padding:16px 32px; border-radius:50px; font-weight:800; font-size:16px; z-index:9990; display:none; box-shadow:0 10px 30px rgba(78,125,99,0.4); transition:all 0.3s; cursor:pointer;";
+                    fab.onmouseover = () => fab.style.transform = "translateY(-3px)";
+                    fab.onmouseout = () => fab.style.transform = "none";
+                    fab.onclick = () => window.location.href = `create-request.html?workers=${Array.from(selectedWorkerIds).join(",")}`;
+                    document.body.appendChild(fab);
+                }
+
+                document.getElementById("selectAllWorkers")?.addEventListener("change", function() {
+                    document.querySelectorAll(".worker-select-cb").forEach(cb => {
+                        cb.checked = this.checked;
+                        if (this.checked) selectedWorkerIds.add(cb.dataset.workerId); else selectedWorkerIds.delete(cb.dataset.workerId);
+                    });
+                    updateSelectedCount();
                 });
-                updateSelectedCount();
-            });
 
-            renderSearchPage(1);
-        } catch (err) {
-            resultsSection.innerHTML = `<div class="alert alert-danger text-center">Lỗi kết nối máy chủ.</div>`;
-        }
-    });
+                renderSearchPage(1);
+            } catch (err) {
+                resultsSection.innerHTML = `<div class="alert alert-danger text-center">Lỗi kết nối máy chủ.</div>`;
+            }
+        });
+    }
 
     function renderSearchPage(page) {
         currentSearchPage = page;
@@ -561,26 +695,45 @@ document.addEventListener("DOMContentLoaded", function () {
     function renderWorkersList(grid, workers) {
         grid.innerHTML = "";
         workers.forEach(w => {
-            const stars = "⭐".repeat(Math.round(w.displayRating));
-            let sHTML = (w.services || []).slice(0, 3).map(s => `<span class="worker-service-tag">${s}</span>`).join("");
-            if (w.services?.length > 3) sHTML += `<span class="worker-service-tag text-muted">+${w.services.length - 3}</span>`;
-            
             const div = document.createElement("div");
             div.className = "col-md-6 col-lg-4";
             div.innerHTML = `
-                <div class="worker-card-premium" style="position:relative;">
-                    <input type="checkbox" class="worker-select-cb" data-worker-id="${w.id}" style="position:absolute; top:12px; left:12px; z-index:5;">
-                    <div class="worker-card-body">
-                        <div class="d-flex justify-content-between">
-                            <h6 class="worker-name">${w.nameOrStore || "---"}</h6>
-                            <div class="worker-rating-pill">⭐ ${w.displayRating.toFixed(1)}</div>
+                <div class="worker-card-premium" style="position:relative; background:white; border-radius:14px; padding:16px; box-shadow:0 4px 15px rgba(0,0,0,0.04); transition:transform 0.2s; height:100%; display:flex; flex-direction:column;">
+                    <input type="checkbox" class="worker-select-cb" data-worker-id="${w.id}" style="position:absolute; top:20px; right:20px; z-index:5; width:20px; height:20px; cursor:pointer;">
+                    
+                    <div class="worker-card-body" style="flex-grow:1;">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h5 class="worker-name m-0" style="font-weight:800; color:#2c3e50; font-size:16px; max-width:80%;">${w.nameOrStore || "---"}</h5>
                         </div>
-                        <div class="worker-location-text"><i class="fa-solid fa-location-dot"></i> ${w.location || "---"}</div>
-                        <div class="worker-service-tags">${sHTML}</div>
+                        
+                        <div class="worker-rating-pill mb-2" style="display:inline-block; background:#fff8e1; color:#f39c12; padding:3px 10px; border-radius:30px; font-weight:700; font-size:13px;">
+                            <i class="fa-solid fa-star"></i> ${w.displayRating.toFixed(1)}
+                        </div>
+                        
+                        <div class="worker-location-text mb-2" style="color:#666; font-size:13px; display:flex; gap:8px;">
+                            <i class="fa-solid fa-location-dot mt-1" style="color:#e74c3c;"></i> 
+                            <span>${w.address || w.location || "---"}</span>
+                        </div>
+                        
+                        <div class="worker-service-tags" style="display:flex; flex-wrap:wrap; gap:6px;">
+                            ${(() => {
+                                let sList = [];
+                                if (Array.isArray(w.services)) {
+                                    sList = w.services;
+                                } else if (typeof w.services === 'string') {
+                                    try { sList = JSON.parse(w.services); } catch(e) { sList = [w.services]; }
+                                }
+                                const top3 = sList.slice(0, 3);
+                                let html = top3.map(s => `<span style="background:#eaf3ed; color:#4e7d63; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:700;">${s}</span>`).join("");
+                                if (sList.length > 3) html += `<span style="background:#f0f0f0; color:#888; padding:4px 8px; border-radius:8px; font-size:12px; font-weight:700;">+${sList.length - 3}</span>`;
+                                return html;
+                            })()}
+                        </div>
                     </div>
-                    <div class="worker-card-footer d-flex gap-2">
-                        <a href="repairman-detail.html?id=${w.id}" class="btn btn-outline-secondary btn-sm rounded-pill flex-grow-1">Chi tiết</a>
-                        <a href="create-request.html?workerId=${w.id}" class="btn btn-success btn-sm rounded-pill flex-grow-1" style="background:#4e7d63;">Chọn thợ</a>
+                    
+                    <div class="worker-card-footer d-flex gap-2 mt-3 pt-3" style="border-top:1px solid #f0f0f0;">
+                        <a href="worker-detail.html?id=${w.id}" class="btn flex-grow-1" style="background:#f8f9fa; color:#2c3e50; border:none; padding:10px; border-radius:12px; font-weight:700; font-size:14px; transition:all 0.2s;">Xem chi tiết</a>
+                        <a href="create-request.html?workerId=${w.id}&workerName=${encodeURIComponent(w.nameOrStore || '')}" class="btn flex-grow-1" style="background:linear-gradient(135deg, #4e7d63, #3a9d6e); color:white; border:none; padding:10px; border-radius:12px; font-weight:700; font-size:14px; box-shadow:0 4px 15px rgba(78,125,99,0.3); transition:all 0.2s;">Chọn thợ</a>
                     </div>
                 </div>
             `;
@@ -610,4 +763,53 @@ document.addEventListener("DOMContentLoaded", function () {
     document.addEventListener("click", (e) => {
         if (!e.target.closest(".search-bar-wrapper")) { closeLocationPopup(); closeCategoryDropdown(); }
     });
+
+    // ====== NOTIFICATION BADGE POLLING (30s) ======
+    (function initNotificationBadge() {
+        const phone = sessionStorage.getItem("userPhone");
+        if (!phone || sessionStorage.getItem("isLoggedIn") !== "true") return;
+
+        async function checkUnread() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/notifications/user/${phone}`);
+                if (!res.ok) return;
+                const notifs = await res.json();
+                const unreadCount = notifs.filter(n => !n.isRead).length;
+
+                // Update navbar bell badge
+                const bellIcon = document.querySelector(".nav-icon");
+                if (bellIcon) {
+                    let badge = bellIcon.querySelector(".notif-badge");
+                    if (unreadCount > 0) {
+                        if (!badge) {
+                            badge = document.createElement("span");
+                            badge.className = "notif-badge";
+                            badge.style.cssText = "position:absolute;top:-4px;right:-4px;background:#e74c3c;color:white;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 2px 6px rgba(231,76,60,0.4);";
+                            bellIcon.style.position = "relative";
+                            bellIcon.appendChild(badge);
+                        }
+                        badge.textContent = unreadCount > 9 ? "9+" : unreadCount;
+                    } else if (badge) {
+                        badge.remove();
+                    }
+                }
+
+                // Update sidebar badge (worker dashboard)
+                const sidebarBadge = document.getElementById("sidebarBadge");
+                if (sidebarBadge) {
+                    if (unreadCount > 0) {
+                        sidebarBadge.style.display = "inline-block";
+                        sidebarBadge.textContent = unreadCount > 9 ? "9+" : unreadCount;
+                    } else {
+                        sidebarBadge.style.display = "none";
+                    }
+                }
+            } catch (e) {
+                // Silently fail
+            }
+        }
+
+        checkUnread();
+        setInterval(checkUnread, 30000);
+    })();
 });

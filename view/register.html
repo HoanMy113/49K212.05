@@ -4,98 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký | FixItNow</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: #f8faf9;
-            height: auto;
+            background: linear-gradient(135deg, #eaf3ed 0%, #d4e8dc 100%);
+            font-family: 'Nunito', sans-serif;
             min-height: 100vh;
-            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 40px 0;
+            padding: 40px 20px;
         }
         .auth-wrapper {
             width: 100%;
-            max-width: 450px;
-            padding: 20px;
+            max-width: 500px;
         }
         .auth-card {
             background: white;
             padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
         }
         .auth-header {
             text-align: center;
             margin-bottom: 30px;
         }
         .auth-header h1 {
-            color: #4e7d63;
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4e7d63, #3a9d6e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
+        .auth-header p {
+            color: #888;
+            font-size: 15px;
+        }
+
+        /* Role Tabs */
         .role-tabs {
             display: flex;
             background: #f0f1f4;
             padding: 5px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 25px;
         }
         .role-tab {
             flex: 1;
             text-align: center;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             color: #666;
-            transition: all 0.2s;
+            transition: all 0.25s;
+            font-size: 14px;
         }
         .role-tab.active {
             background: white;
             color: #4e7d63;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
+        .role-tab i { margin-right: 6px; }
+
+        /* Form */
         .form-group {
             margin-bottom: 18px;
         }
         .form-label {
             display: block;
             margin-bottom: 6px;
-            font-weight: 500;
-            color: #333;
+            font-weight: 700;
+            color: #2c3e50;
             font-size: 14px;
         }
         .form-control {
             width: 100%;
-            padding: 11px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
             font-size: 15px;
-            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.2s;
+            background: #fcfcfc;
         }
         .form-control:focus {
             border-color: #4e7d63;
             outline: none;
+            box-shadow: 0 0 0 4px rgba(78,125,99,0.1);
+            background: white;
         }
+        .form-control.is-invalid {
+            border-color: #e74c3c;
+        }
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+        .invalid-feedback {
+            color: #e74c3c;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 5px;
+            display: none;
+        }
+        .form-control.is-invalid + .invalid-feedback,
+        .is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        /* Address Grid */
+        .address-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .address-grid .form-group {
+            margin-bottom: 0;
+        }
+        .address-full {
+            grid-column: 1 / -1;
+        }
+
+        /* Submit */
         .auth-btn {
             width: 100%;
-            background: #4e7d63;
+            background: linear-gradient(135deg, #4e7d63, #3a9d6e);
             color: white;
             border: none;
             padding: 14px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(78,125,99,0.3);
+            font-family: 'Nunito', sans-serif;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(78,125,99,0.4);
+        }
+        .auth-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
         .auth-links {
             text-align: center;
@@ -106,21 +167,47 @@
         .auth-links a {
             color: #4e7d63;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
         }
-        .invalid-feedback {
-            color: #d9534f;
-            font-size: 12px;
-            margin-top: 4px;
+
+        /* Repairman section */
+        #repairmanFields {
             display: none;
+            border-top: 2px solid #f0f0f0;
+            padding-top: 20px;
+            margin-top: 5px;
         }
-        .form-control.is-invalid {
-            border-color: #d9534f;
+        .section-label {
+            font-weight: 800;
+            color: #4e7d63;
+            font-size: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-label i { font-size: 16px; }
+
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #4e7d63;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+        .back-home:hover {
+            color: #3a6b52;
+            transform: translateX(-3px);
         }
     </style>
 </head>
 <body>
     <div class="auth-wrapper">
+        <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
         <div class="auth-card">
             <div class="auth-header">
                 <h1>FixItNow</h1>
@@ -128,40 +215,75 @@
             </div>
 
             <div class="role-tabs" id="roleTabs">
-                <div class="role-tab active" data-role="Customer">Khách hàng</div>
-                <div class="role-tab" data-role="Repairman">Thợ sửa chữa</div>
+                <div class="role-tab active" data-role="Customer"><i class="fa-solid fa-user"></i> Khách hàng</div>
+                <div class="role-tab" data-role="Repairman"><i class="fa-solid fa-wrench"></i> Thợ sửa chữa</div>
             </div>
 
-            <form id="registerForm">
+            <form id="registerForm" novalidate>
+                <!-- Common Fields -->
                 <div class="form-group">
                     <label class="form-label">Họ và tên</label>
-                    <input type="text" id="fullName" class="form-control" placeholder="Nhập họ và tên đầy đủ" required>
-                    <div class="invalid-feedback" id="nameError">Tên không hợp lệ.</div>
+                    <input type="text" id="fullName" class="form-control" placeholder="VD: Nguyễn Văn A" required>
+                    <div class="invalid-feedback" id="nameError"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Số điện thoại</label>
-                    <input type="text" id="phone" class="form-control" placeholder="Nhập số điện thoại" required>
-                    <div class="invalid-feedback" id="phoneError">Số điện thoại không hợp lệ.</div>
+                    <input type="text" id="phone" class="form-control" placeholder="VD: 0912345678" maxlength="10" required>
+                    <div class="invalid-feedback" id="phoneError"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Mật khẩu</label>
                     <input type="password" id="password" class="form-control" placeholder="Tối thiểu 6 ký tự" required>
-                    <div class="invalid-feedback" id="passwordError">Mật khẩu quá ngắn.</div>
+                    <div class="invalid-feedback" id="passwordError"></div>
                 </div>
-                <!-- Extra fields for repairman -->
-                <div id="repairmanFields" style="display: none;">
+
+                <!-- Repairman Extra Fields -->
+                <div id="repairmanFields">
+                    <div class="section-label"><i class="fa-solid fa-location-dot"></i> Thông tin địa chỉ & kỹ năng</div>
+                    
                     <div class="form-group">
                         <label class="form-label">Kỹ năng chính</label>
                         <select id="category" class="form-control">
+                            <option value="">-- Chọn kỹ năng --</option>
                             <option value="Sửa điện">Sửa điện</option>
                             <option value="Sửa nước">Sửa nước</option>
                             <option value="Máy lạnh">Máy lạnh</option>
                             <option value="Điện gia dụng">Điện gia dụng</option>
+                            <option value="Sửa máy giặt">Sửa máy giặt</option>
+                            <option value="Sửa tủ lạnh">Sửa tủ lạnh</option>
+                            <option value="Sửa bếp gas">Sửa bếp gas</option>
                         </select>
+                    </div>
+
+                    <div class="address-grid">
+                        <div class="form-group">
+                            <label class="form-label">Tỉnh / Thành phố</label>
+                            <select id="provinceSelect" class="form-control">
+                                <option value="">-- Chọn tỉnh/TP --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Quận / Huyện</label>
+                            <select id="districtSelect" class="form-control" disabled>
+                                <option value="">-- Chọn quận/huyện --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phường / Xã</label>
+                            <select id="wardSelect" class="form-control" disabled>
+                                <option value="">-- Chọn phường/xã --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Địa chỉ chi tiết</label>
+                            <input type="text" id="detailAddress" class="form-control" placeholder="Số nhà, đường...">
+                        </div>
                     </div>
                 </div>
                 
-                <button type="submit" class="auth-btn">Tạo tài khoản</button>
+                <button type="submit" class="auth-btn" id="submitBtn">
+                    <i class="fa-solid fa-user-plus me-1"></i> Tạo tài khoản
+                </button>
             </form>
 
             <div class="auth-links">
@@ -170,7 +292,7 @@
         </div>
     </div>
 
-    <script src="js/main.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/register.js"></script>
 </body>
 </html>

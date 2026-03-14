@@ -10,6 +10,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- Config & Scripts -->
+    <script src="js/config.js"></script>
+    <script>
+        // Ban workers from accessing the customer homepage
+        if (sessionStorage.getItem('isLoggedIn') === 'true' && sessionStorage.getItem('userRole') === 'Repairman') {
+            window.location.href = 'worker-dashboard.html';
+        }
+    </script>
+
     <!-- CSS frontend -->
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -20,24 +29,22 @@
 
     <nav class="navbar-custom">
         <div class="container nav-wrapper">
-            <div class="logo">FixItNow</div>
+            <div class="logo d-flex align-items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                FixItNow
+            </div>
 
             <div class="nav-actions">
 
                 <!-- Chưa đăng nhập -->
                 <div class="nav-guest">
-                    <a href="register.html" class="btn-register">Đăng ký</a>
-                    <a href="login.html" class="btn-login">Đăng nhập</a>
+                    <a href="register.html" class="btn-register" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Đăng ký</a>
+                    <a href="login.html" class="btn-login" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Đăng nhập</a>
                     
                 </div>
 
                 <!-- Đã đăng nhập -->
-                <div class="nav-user" id="navUser" style="display:none;">
-
-                    <!-- Notification icon -->
-                    <div class="nav-icon">
-                        <img src="assets/images/bell.png" alt="Thông báo">
-                    </div>
+                <div class="nav-user" id="navUser" style="display:none; align-items: center;">
 
                     <!-- User dropdown -->
                     <div class="user-dropdown">
@@ -48,12 +55,12 @@
                         </button>
 
                         <div class="dropdown-menu">
-                            <a href="#">
+                            <a href="#" id="navManageRequests">
                                 <img src="assets/images/list.png" width="18">
                                 Quản lý yêu cầu
                             </a>
 
-                            <a href="profile.html">
+                            <a href="#" id="navProfileLink">
                                 <img src="assets/images/avatar.png" width="18">
                                 Quản lý hồ sơ
                             </a>
@@ -233,6 +240,35 @@
 
                     </div>
                 </div>
+
+                <!-- QUICK CATEGORIES -->
+                <div class="quick-categories">
+                    <a href="create-request.html?category=Sửa điện&broadcast=true" class="qc-item">
+                        <div class="qc-icon">⚡</div>
+                        <span class="qc-label">Sửa điện</span>
+                    </a>
+                    <a href="create-request.html?category=Sửa ống nước&broadcast=true" class="qc-item">
+                        <div class="qc-icon">💧</div>
+                        <span class="qc-label">Ống nước</span>
+                    </a>
+                    <a href="create-request.html?category=Sửa máy lạnh&broadcast=true" class="qc-item">
+                        <div class="qc-icon">❄️</div>
+                        <span class="qc-label">Máy lạnh</span>
+                    </a>
+                    <a href="create-request.html?category=Sửa máy giặt&broadcast=true" class="qc-item">
+                        <div class="qc-icon">👕</div>
+                        <span class="qc-label">Máy giặt</span>
+                    </a>
+                    <a href="create-request.html?category=Sửa tủ lạnh&broadcast=true" class="qc-item">
+                        <div class="qc-icon">🧊</div>
+                        <span class="qc-label">Tủ lạnh</span>
+                    </a>
+                    <a href="create-request.html?category=Sơn sửa nhỏ&broadcast=true" class="qc-item">
+                        <div class="qc-icon">🔨</div>
+                        <span class="qc-label">Sửa vặt</span>
+                    </a>
+                </div>
+
             </div>
         </section>
     </main>
@@ -241,10 +277,8 @@
         © 2026 FixItNow - Website kết nối sửa chữa dân dụng tức thời
     </footer>
 
-    <script src="js/config.js"></script>
     <script src="js/main.js"></script>
 
 </body>
 
 </html>
-

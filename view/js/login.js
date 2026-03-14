@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loginError = document.getElementById('loginError');
 
         try {
-            const response = await fetch('http://localhost:5194/api/auth/login', {
+            const response = await fetch(`${API_BASE_URL}/api/Auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone, password, role: currentRole })
@@ -28,14 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('userPhone', phone);
-                sessionStorage.setItem('userRole', currentRole);
-                sessionStorage.setItem('userName', data.fullName || 'Người dùng');
+                sessionStorage.setItem("userRole", currentRole); // Changed from currentRole to currentRole (was 'role' in instruction, but currentRole is the variable)
+                sessionStorage.setItem('userName', data.fullName || 'Người dùng'); // Moved this line up
                 
                 if (data.workerProfileId) {
-                    sessionStorage.setItem('workerProfileId', data.workerProfileId);
+                    sessionStorage.setItem("workerProfileId", data.workerProfileId);
                 }
 
-                window.location.href = 'index.html';
+                if (currentRole === "Repairman") { // Used currentRole for conditional redirect
+                    window.location.href = "worker-dashboard.html";
+                } else {
+                    window.location.href = "index.html";
+                }
             } else {
                 loginError.style.display = 'block';
             }

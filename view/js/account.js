@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const updatedName = fullNameInput.value;
 
         try {
-            const response = await fetch(`http://localhost:5194/api/users/${userPhone}`, {
+            const response = await fetch(`${API_BASE_URL}/api/users/${userPhone}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fullName: updatedName })

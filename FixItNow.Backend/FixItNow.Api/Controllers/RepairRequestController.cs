@@ -267,7 +267,7 @@ public class RepairRequestsController : ControllerBase
 
     // ====== US_06: Từ chối yêu cầu ======
     [HttpPut("{id}/reject")]
-    public async Task<IActionResult> RejectRequest(int id)
+    public async Task<IActionResult> RejectRequest(int id, [FromQuery] int? workerId)
     {
         var request = await _context.RepairRequests.FindAsync(id);
         if (request == null)
@@ -276,22 +276,55 @@ public class RepairRequestsController : ControllerBase
         if (request.Status != RequestStatus.Pending)
             return BadRequest(new { message = "Chỉ có thể từ chối yêu cầu đang chờ" });
 
-        request.Status = RequestStatus.Cancelled;
-        request.UpdatedAt = DateTime.Now;
-
-        // US_08: Thông báo cho khách hàng
-        var notification = new Notification
+        // Logic xử lý từ chối cho Đơn Multi-select hoặc Broadcast
+        if (request.IsBroadcast || !string.IsNullOrEmpty(request.TargetWorkerIds))
         {
-            UserPhone = request.CustomerPhone,
-            Title = "❌ Yêu cầu bị từ chối",
-            Message = $"Thợ {request.WorkerName} đã từ chối yêu cầu \"{request.Category}\"",
-            Type = "rejected",
-            RelatedRequestId = request.Id,
-            CreatedAt = DateTime.Now
-        };
-        _context.Notifications.Add(notification);
-        await _context.SaveChangesAsync();
+            if (workerId.HasValue && !string.IsNullOrEmpty(request.TargetWorkerIds))
+            {
+                // Xóa thợ khỏi danh sách mục tiêu
+                request.TargetWorkerIds = request.TargetWorkerIds.Replace($",{workerId.Value},", ",");
+                
+                // Nếu không còn thợ nào trong danh sách mục tiêu -> Hủy luôn đơn
+                if (request.TargetWorkerIds == "," || string.IsNullOrWhiteSpace(request.TargetWorkerIds.Replace(",", "")))
+                {
+                    request.Status = RequestStatus.Cancelled;
+                    request.UpdatedAt = DateTime.Now;
+                    
+                    var notif = new Notification
+                    {
+                        UserPhone = request.CustomerPhone,
+                        Title = "❌ Yêu cầu bị từ chối",
+                        Message = $"Tất cả thợ được chọn đã từ chối yêu cầu \"{request.Category}\"",
+                        Type = "rejected",
+                        RelatedRequestId = request.Id,
+                        CreatedAt = DateTime.Now
+                    };
+                    _context.Notifications.Add(notif);
+                }
+            }
+            // Với Broadcast thực sự (không có danh sách), không làm gì thêm ở server
+            // Client sẽ tự ẩn đi khỏi giao diện của thợ đó.
+        }
+        else 
+        {
+            // Đơn 1-kèm-1 (Single worker)
+            request.Status = RequestStatus.Cancelled;
+            request.UpdatedAt = DateTime.Now;
 
+            // US_08: Thông báo cho khách hàng
+            var notification = new Notification
+            {
+                UserPhone = request.CustomerPhone,
+                Title = "❌ Yêu cầu bị từ chối",
+                Message = $"Thợ {request.WorkerName} đã từ chối yêu cầu \"{request.Category}\"",
+                Type = "rejected",
+                RelatedRequestId = request.Id,
+                CreatedAt = DateTime.Now
+            };
+            _context.Notifications.Add(notification);
+        }
+
+        await _context.SaveChangesAsync();
         return Ok(new { message = "Đã từ chối yêu cầu", request });
     }
 
@@ -308,9 +341,60 @@ public class RepairRequestsController : ControllerBase
 
         request.Status = RequestStatus.Cancelled;
         request.UpdatedAt = DateTime.Now;
+
+        // Thông báo cho thợ (nếu đã có thợ nhận hoặc đơn broadcast/multi)
+        if (request.WorkerId != null)
+        {
+            var worker = await _context.WorkerProfiles.FindAsync(request.WorkerId);
+            var workerUser = await _context.Users.FirstOrDefaultAsync(u => u.WorkerProfileId == request.WorkerId);
+            string targetPhone = workerUser?.Phone ?? worker?.PhoneNumber ?? "";
+            if (!string.IsNullOrEmpty(targetPhone))
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserPhone = targetPhone,
+                    Title = "🚫 Khách đã huỷ yêu cầu",
+                    Message = $"{request.CustomerName} đã huỷ yêu cầu \"{request.Category}\" tại {request.Address}",
+                    Type = "customer_cancelled",
+                    RelatedRequestId = request.Id,
+                    CreatedAt = DateTime.Now
+                });
+            }
+        }
+
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Đã hủy yêu cầu thành công", request });
+    }
+
+    // ====== US_14: Hoàn thành yêu cầu (Thợ) ======
+    [HttpPut("{id}/complete")]
+    public async Task<IActionResult> CompleteRequest(int id)
+    {
+        var request = await _context.RepairRequests.FindAsync(id);
+        if (request == null)
+            return NotFound(new { message = "Không tìm thấy yêu cầu" });
+
+        if (request.Status != RequestStatus.Confirmed)
+            return BadRequest(new { message = "Chỉ có thể hoàn thành yêu cầu đã được xác nhận" });
+
+        request.Status = RequestStatus.Completed;
+        request.UpdatedAt = DateTime.Now;
+
+        // US_08: Thông báo cho khách hàng
+        var notification = new Notification
+        {
+            UserPhone = request.CustomerPhone,
+            Title = "✅ Yêu cầu đã hoàn thành",
+            Message = $"Thợ {request.WorkerName} đã hoàn thành yêu cầu \"{request.Category}\". Hãy để lại đánh giá nhé!",
+            Type = "completed",
+            RelatedRequestId = request.Id,
+            CreatedAt = DateTime.Now
+        };
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Đã hoàn thành yêu cầu", request });
     }
 
     // ====== US_12: Cập nhật trạng thái công việc (Thợ) ======

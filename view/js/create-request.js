@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", async function () {
 
     // KẾT HỢP ĐĂNG NHẬP: Bắt buộc đăng nhập để tạo yêu cầu
     if (sessionStorage.getItem("isLoggedIn") !== "true") {
@@ -92,8 +92,8 @@
     });
 
     // Auto-fill thông tin từ session nếu đã đăng nhập
-    const sessionName = sessionStorage.getItem("fullName");
-    const sessionPhone = sessionStorage.getItem("phone");
+    const sessionName = sessionStorage.getItem("userName");
+    const sessionPhone = sessionStorage.getItem("userPhone");
     if (sessionName) document.getElementById("customerName").value = sessionName;
     if (sessionPhone) document.getElementById("customerPhone").value = sessionPhone;
 
@@ -137,7 +137,14 @@
     }
 
     // Auto-select category từ URL (Quick Categories trên trang chủ)
+    const isBroadcast = urlParams.get("broadcast") === "true";
+    
     if (preCategory) {
+        if (isBroadcast && broadcastToggle) {
+            broadcastToggle.checked = true;
+            broadcastToggle.dispatchEvent(new Event("change"));
+        }
+        
         const categorySelect = document.getElementById("category");
         for (let opt of categorySelect.options) {
             if (opt.value === preCategory) {
@@ -172,50 +179,57 @@
                 helpText.style.display = 'none';
             }
         }
+        
+        // Ẩn luôn "Yêu cầu nhanh" vì đã chọn thợ cụ thể
+        if (broadcastGroup) {
+            broadcastGroup.style.display = "none";
+        }
     }
 
     // 1. Tải danh sách thợ từ API
     let allWorkers = [];
-    try {
-        const res = await fetch(`${API_BASE_URL}/api/profiles/search`);
-        const workers = await res.json();
+    (async () => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/profiles/search`);
+            const workers = await res.json();
 
-        if (Array.isArray(workers)) {
-            allWorkers = workers;
-            
-            // Multi-worker mode: hiển thị tên các thợ đã chọn
-            if (mode === "multi" && multiWorkerIdsList.length > 0) {
-                const selectedWorkers = workers.filter(w => multiWorkerIdsList.includes(w.id));
-                const namesEl = document.getElementById("multiWorkerNames");
-                if (namesEl && selectedWorkers.length > 0) {
-                    namesEl.innerHTML = selectedWorkers.map(w => 
-                        `<span style="display:inline-block; background:#fff; border:1px solid #ddd; padding:3px 10px; border-radius:20px; margin:3px 3px 0 0; font-weight:600;"><i class="fa-solid fa-helmet-safety text-primary"></i> ${w.nameOrStore}</span>`
-                    ).join("");
+            if (Array.isArray(workers)) {
+                allWorkers = workers;
+                
+                // Multi-worker mode: hiển thị tên các thợ đã chọn
+                if (mode === "multi" && multiWorkerIdsList.length > 0) {
+                    const selectedWorkers = workers.filter(w => multiWorkerIdsList.includes(w.id));
+                    const namesEl = document.getElementById("multiWorkerNames");
+                    if (namesEl && selectedWorkers.length > 0) {
+                        namesEl.innerHTML = selectedWorkers.map(w => 
+                            `<span style="display:inline-block; background:#fff; border:1px solid #ddd; padding:3px 10px; border-radius:20px; margin:3px 3px 0 0; font-weight:600;"><i class="fa-solid fa-helmet-safety text-primary"></i> ${w.nameOrStore}</span>`
+                        ).join("");
+                    }
+                }
+
+                if (preWorkerId && !preWorkerIds) {
+                    // Nếu được chọn trước từ trang chi tiết, cập nhật lại tên thật của thợ
+                    const selectedWorker = workers.find(w => w.id == preWorkerId);
+                    const opt = workerSelect.querySelector(`option[value="${preWorkerId}"]`);
+                    if (opt && selectedWorker) {
+                        opt.textContent = `${selectedWorker.nameOrStore} — ${selectedWorker.location || "Không rõ"}`;
+                    } else if (opt) {
+                        opt.textContent = `Thợ sửa chữa (ID: ${preWorkerId})`;
+                    }
+                } else if (!preWorkerIds) {
+                    // Nếu không có thợ chọn trước, hiển thị danh sách tất cả thợ
+                    workers.forEach(w => {
+                        const opt = document.createElement("option");
+                        opt.value = w.id;
+                        opt.textContent = `${w.nameOrStore} — ${w.location || "Không rõ"}`;
+                        workerSelect.appendChild(opt);
+                    });
                 }
             }
-
-            if (preWorkerId && !preWorkerIds) {
-                // Nếu được chọn trước từ trang chi tiết, cập nhật lại tên thật của thợ
-                const selectedWorker = workers.find(w => w.id == preWorkerId);
-                const opt = workerSelect.querySelector(`option[value="${preWorkerId}"]`);
-                if (opt && selectedWorker) {
-                    opt.textContent = `${selectedWorker.nameOrStore} — ${selectedWorker.location || "Không rõ"}`;
-                } else if (opt) {
-                    opt.textContent = `Thợ sửa chữa (ID: ${preWorkerId})`;
-                }
-            } else if (!preWorkerIds) {
-                // Nếu không có thợ chọn trước, hiển thị danh sách tất cả thợ
-                workers.forEach(w => {
-                    const opt = document.createElement("option");
-                    opt.value = w.id;
-                    opt.textContent = `${w.nameOrStore} — ${w.location || "Không rõ"}`;
-                    workerSelect.appendChild(opt);
-                });
-            }
+        } catch (err) {
+            console.error("Load workers error:", err);
         }
-    } catch (err) {
-        console.error("Load workers error:", err);
-    }
+    })();
 
     // 2. Xử lý gửi form
     form.addEventListener("submit", async function (e) {

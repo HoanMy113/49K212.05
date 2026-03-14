@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function fetchNotifications() {
         try {
-            const response = await fetch(`http://localhost:5194/api/notifications/user/${userPhone}`);
+            const response = await fetch(`${API_BASE_URL}/api/notifications/user/${userPhone}`);
             if (!response.ok) throw new Error('Không thể tải thông báo');
             const data = await response.json();
             renderNotifications(data);
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     window.markAsRead = async (id) => {
         try {
-            await fetch(`http://localhost:5194/api/notifications/${id}/read`, { method: 'PATCH' });
+            await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, { method: 'PATCH' });
             fetchNotifications(); // Refresh
         } catch (error) {
             console.error(error);

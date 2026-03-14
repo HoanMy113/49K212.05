@@ -71,4 +71,14 @@ public class ProfileService : IProfileService
 
         return workers;
     }
+
+    public async Task<bool> DeleteProfileAsync(int id)
+    {
+        var profile = await _context.WorkerProfiles.FindAsync(id);
+        if (profile == null) return false;
+
+        _context.WorkerProfiles.Remove(profile);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }

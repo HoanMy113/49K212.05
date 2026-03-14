@@ -41,4 +41,14 @@ public class ProfilesController : ControllerBase
         var profiles = await _profileService.SearchProfilesAsync(category, location);
         return Ok(profiles);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProfile(int id)
+    {
+        var result = await _profileService.DeleteProfileAsync(id);
+        if (!result)
+            return NotFound(new { message = "Profile not found" });
+
+        return Ok(new { message = "Profile deleted successfully" });
+    }
 }

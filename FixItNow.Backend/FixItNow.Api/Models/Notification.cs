@@ -3,6 +3,7 @@ namespace FixItNow.Api.Models;
 public class Notification
 {
     public int Id { get; set; }
+    public int UserId { get; set; }
     public string UserPhone { get; set; } = string.Empty; // Use Phone to link instead of ID for ease of use with restored logic
     public string Title { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
