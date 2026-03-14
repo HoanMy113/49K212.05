@@ -41,13 +41,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function highlightStars(rating) {
         stars.forEach(star => {
-            star.classList.toggle('active', parseInt(star.dataset.rating) <= rating);
+            const isActive = parseInt(star.dataset.rating) <= rating;
+            if (isActive) {
+                star.classList.remove('bi-star', 'text-secondary');
+                star.classList.add('bi-star-fill', 'text-warning');
+            } else {
+                star.classList.remove('bi-star-fill', 'text-warning');
+                star.classList.add('bi-star', 'text-secondary');
+            }
         });
     }
 
     function updateStars() {
         stars.forEach(star => {
-            star.classList.toggle('active', parseInt(star.dataset.rating) <= currentRating);
+            const isActive = parseInt(star.dataset.rating) <= currentRating;
+            if (isActive) {
+                star.classList.remove('bi-star', 'text-secondary');
+                star.classList.add('bi-star-fill', 'text-warning');
+            } else {
+                star.classList.remove('bi-star-fill', 'text-warning');
+                star.classList.add('bi-star', 'text-secondary');
+            }
         });
     }
 
