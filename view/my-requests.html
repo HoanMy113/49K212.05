@@ -44,22 +44,29 @@
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar-custom">
-    <div class="container nav-wrapper">
-        <a href="index.html" class="logo" style="text-decoration:none;">FixItNow</a>
-        <div class="nav-actions">
-            <a href="notifications.html" class="nav-icon" style="text-decoration:none; position:relative;">
-                <img src="assets/images/bell.png" alt="Thông báo" style="width:24px; height:24px;">
+<nav class="navbar-custom bg-white border-bottom shadow-sm">
+    <div class="container nav-wrapper d-flex justify-content-between align-items-center">
+        <!-- Khối Logo (Trái) -->
+        <a href="index.html" class="logo d-flex align-items-center gap-2 text-dark text-decoration-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span class="fs-4 fw-bold">FixItNow</span>
+        </a>
+
+        <!-- Khối Avatar + Thông báo (Phải) -->
+        <div class="nav-actions d-flex align-items-center gap-3">
+            <a href="notifications.html" class="nav-icon d-flex align-items-center justify-content-center p-0 m-0 text-decoration-none">
+                <img src="assets/images/bell.png" alt="Thông báo" style="width:24px; height:24px; object-fit: contain;">
             </a>
-            <div class="user-dropdown">
-                <div class="user-btn" id="userAvatar" style="cursor:pointer;">
-                    <img src="assets/images/user.png" class="user-avatar" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
-                    <span id="username">Người dùng</span>
+            
+            <div class="user-dropdown position-relative">
+                <div class="user-btn d-flex align-items-center gap-2" id="userAvatar" style="cursor:pointer;">
+                    <img src="assets/images/user.png" class="user-avatar shadow-sm border" style="width:34px; height:34px; border-radius:50%; object-fit:cover;">
+                    <span class="fw-semibold text-dark fs-6" id="username">Người dùng</span>
                 </div>
                 <div class="dropdown-menu">
                     <a href="customer-profile.html"><i class="fa-solid fa-gear"></i> Tài khoản</a>
                     <a href="my-requests.html"><i class="fa-solid fa-clipboard-list"></i> Yêu cầu của tôi</a>
-                    <a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+                    <a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket text-danger"></i> Đăng xuất</a>
                 </div>
             </div>
         </div>
