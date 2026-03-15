@@ -8,8 +8,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const requestsList = document.getElementById('requestsList');
+    const paginationNav = document.getElementById('paginationNav');
+    const paginationList = document.getElementById('paginationList');
+    
     let allRequests = [];
     let activeFilter = null;
+    let currentPage = 1;
+    const itemsPerPage = 5;
 
     // ====== FETCH ======
     async function fetchMyRequests() {
@@ -63,7 +68,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (filterLabel) filterLabel.textContent = '';
             if (clearBtn) clearBtn.style.display = 'none';
         }
-
+        
+        currentPage = 1; // Reset to first page on filter change
         document.querySelectorAll('.stat-card[data-filter]').forEach(card => {
             card.classList.toggle('active', card.dataset.filter === activeFilter);
         });
@@ -95,10 +101,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <p>Không có yêu cầu nào ở trạng thái này.</p>
                 </div>
             `;
+            if (paginationNav) paginationNav.style.display = 'none';
             return;
         }
 
-        requestsList.innerHTML = requests.map(req => {
+        // Pagination Logic
+        const totalPages = Math.ceil(requests.length / itemsPerPage);
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const currentItems = requests.slice(startIndex, endIndex);
+
+        requestsList.innerHTML = currentItems.map(req => {
             const dateStr = new Date(req.createdAt).toLocaleDateString('vi-VN');
             const workerHtml = req.workerName
                 ? `<span class="fw-bold text-dark">${req.workerName}</span>`
@@ -150,6 +166,62 @@ document.addEventListener('DOMContentLoaded', async () => {
                     confirmed = confirm('Bạn có chắc muốn huỷ yêu cầu này?');
                 }
                 if (confirmed) await cancelRequest(id);
+            });
+        });
+        
+        renderPagination(totalPages, requests);
+    }
+    
+    function renderPagination(totalPages, allFilteredRequests) {
+        if (!paginationNav || !paginationList) return;
+
+        if (totalPages <= 1) {
+            paginationNav.style.display = 'none';
+            return;
+        }
+
+        paginationNav.style.display = 'block';
+        let html = '';
+
+        // Prev btn
+        html += `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link shadow-sm" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        `;
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+                <li class="page-item ${currentPage === i ? 'active' : ''}">
+                    <a class="page-link shadow-sm" href="#" data-page="${i}">${i}</a>
+                </li>
+            `;
+        }
+
+        // Next btn
+        html += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link shadow-sm" href="#" data-page="${currentPage + 1}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `;
+
+        paginationList.innerHTML = html;
+
+        // Attach events
+        paginationList.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = parseInt(e.currentTarget.dataset.page);
+                if (!isNaN(page) && page >= 1 && page <= totalPages && page !== currentPage) {
+                    currentPage = page;
+                    renderRequests(allFilteredRequests);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             });
         });
     }

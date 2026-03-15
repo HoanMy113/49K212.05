@@ -19,8 +19,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const requestsList = document.getElementById('requestsList');
+    const paginationNav = document.getElementById('paginationNav');
+    const paginationList = document.getElementById('paginationList');
+
     let allFetchedRequests = [];
     let activeFilter = null;
+    let currentPage = 1;
+    const itemsPerPage = 5;
     
     async function fetchRequests() {
         try {
@@ -59,6 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.classList.toggle('active', card.dataset.filter === activeFilter);
         });
 
+        currentPage = 1; // Reset to first page
         renderRequests(filtered);
     }
 
@@ -77,15 +83,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <div class="empty-icon"><i class="fas fa-box-open"></i></div>
                 <div class="empty-text">Chưa có yêu cầu nào gửi đến bạn.</div>
             `;
+            if (paginationNav) paginationNav.style.display = 'none';
             return;
         }
+
+        const totalPages = Math.ceil(requests.length / itemsPerPage);
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const currentItems = requests.slice(startIndex, endIndex);
 
         requestsList.style.display = 'grid';
         requestsList.style.gridTemplateColumns = '1fr';
         requestsList.style.gap = '20px';
         requestsList.style.justifyItems = 'stretch';
         requestsList.style.alignItems = 'start';
-        requestsList.innerHTML = requests.map(req => `
+        requestsList.innerHTML = currentItems.map(req => `
             <div class="request-item" style="background: white; border: 1px solid #e8e8e8; border-radius: 16px; padding: 24px; transition: box-shadow 0.3s ease;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -146,6 +161,58 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         document.querySelectorAll('.btn-complete').forEach(btn => {
             btn.addEventListener('click', () => completeRequest(btn.dataset.id));
+        });
+
+        renderPagination(totalPages, requests);
+    }
+
+    function renderPagination(totalPages, filteredRequests) {
+        if (!paginationNav || !paginationList) return;
+
+        if (totalPages <= 1) {
+            paginationNav.style.display = 'none';
+            return;
+        }
+
+        paginationNav.style.display = 'block';
+        let html = '';
+
+        html += `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link shadow-sm" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        `;
+
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+                <li class="page-item ${currentPage === i ? 'active' : ''}">
+                    <a class="page-link shadow-sm" href="#" data-page="${i}">${i}</a>
+                </li>
+            `;
+        }
+
+        html += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link shadow-sm" href="#" data-page="${currentPage + 1}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `;
+
+        paginationList.innerHTML = html;
+
+        paginationList.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = parseInt(e.currentTarget.dataset.page);
+                if (!isNaN(page) && page >= 1 && page <= totalPages && page !== currentPage) {
+                    currentPage = page;
+                    renderRequests(filteredRequests);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
         });
     }
 
