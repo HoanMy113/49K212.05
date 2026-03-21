@@ -424,6 +424,62 @@ document.addEventListener('DOMContentLoaded', async () => {
             else alert('Lỗi kết nối máy chủ.');
         }
     }
+    // ====== CHẤP NHẬN YÊU CẦU ======
+    async function acceptRequest(requestId) {
+        let confirmed = false;
+        if (typeof showConfirmModal === 'function') {
+            confirmed = await showConfirmModal("Bạn có chắc muốn chấp nhận yêu cầu này?");
+        } else {
+            confirmed = confirm('Bạn có chắc muốn chấp nhận yêu cầu này?');
+        }
 
+        if (confirmed) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/repairrequests/${requestId}/accept?workerId=${workerProfileId}`, {
+                    method: 'PUT'
+                });
+                if (response.ok) {
+                    if (typeof showModal !== 'undefined') showModal('Đã chấp nhận yêu cầu thành công!', 'success', { autoClose: 2000 });
+                    else alert('Chấp nhận thành công!');
+                    fetchRequests(); // Tải lại danh sách
+                } else {
+                    const error = await response.json();
+                    if (typeof showModal !== 'undefined') showModal(error.message || 'Không thể chấp nhận yêu cầu.', 'error');
+                    else alert(error.message || 'Lỗi chấp nhận yêu cầu');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
+
+    // ====== TỪ CHỐI YÊU CẦU ======
+    async function rejectRequest(requestId) {
+        let confirmed = false;
+        if (typeof showConfirmModal === 'function') {
+            confirmed = await showConfirmModal("Bạn có chắc muốn từ chối yêu cầu này?");
+        } else {
+            confirmed = confirm('Bạn có chắc muốn từ chối yêu cầu này?');
+        }
+
+        if (confirmed) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/repairrequests/${requestId}/reject?workerId=${workerProfileId}`, {
+                    method: 'PUT'
+                });
+                if (response.ok) {
+                    if (typeof showModal !== 'undefined') showModal('Đã từ chối yêu cầu.', 'success', { autoClose: 2000 });
+                    else alert('Đã từ chối.');
+                    fetchRequests(); // Tải lại danh sách
+                } else {
+                    const error = await response.json();
+                    if (typeof showModal !== 'undefined') showModal(error.message || 'Không thể từ chối yêu cầu.', 'error');
+                    else alert(error.message || 'Lỗi từ chối yêu cầu');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    }
     fetchRequests();
 });
