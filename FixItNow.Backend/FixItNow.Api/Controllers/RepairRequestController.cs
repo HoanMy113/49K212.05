@@ -427,4 +427,54 @@ public class RepairRequestsController : ControllerBase
 
         return Ok(new { message = "Đã cập nhật trạng thái", request });
     }
+    // Gửi thông báo khi có yêu cầu mới (Broadcast)
+foreach (var wu in allWorkerUsers)
+{
+    _context.Notifications.Add(new Notification
+    {
+        UserPhone = wu.Phone,
+        Title = "📢 Yêu cầu nhanh mới!",
+        Message = $"{dto.CustomerName} cần \"{dto.Category}\" tại {dto.Address}.",
+        Type = "broadcast_request",
+        RelatedRequestId = request.Id,
+        CreatedAt = DateTime.Now
+    });
+}
+
+// Gửi thông báo khi khách chọn thợ cụ thể (Multi-select)
+_context.Notifications.Add(new Notification
+{
+    UserPhone = targetPhone,
+    Title = "📩 Yêu cầu chọn lọc mới",
+    Message = $"{dto.CustomerName} vừa chọn bạn cho dịch vụ \"{dto.Category}\".",
+    Type = "new_request",
+    RelatedRequestId = request.Id,
+    CreatedAt = DateTime.Now
+});
+
+// Gửi thông báo khi khách hủy đơn (Cancel)
+_context.Notifications.Add(new Notification
+{
+    UserPhone = targetPhone,
+    Title = "🚫 Khách đã huỷ yêu cầu",
+    Message = $"{request.CustomerName} đã huỷ yêu cầu \"{request.Category}\"",
+    Type = "customer_cancelled",
+    RelatedRequestId = request.Id,
+    CreatedAt = DateTime.Now
+});
+```
+
+## 4. DTO ([DTOs/CreateRepairRequestDto.cs](file:///d:/Qu%E1%BA%A3n%20tr%E1%BB%8B%20d%E1%BB%B1%20%C3%A1n%20CNTT/FE/FixItNow.Backend/FixItNow.Api/DTOs/CreateRepairRequestDto.cs))
+```csharp
+public class CreateRepairRequestDto
+{
+    public string CustomerName { get; set; } = string.Empty;
+    public string CustomerPhone { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    public string Category { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public int? WorkerId { get; set; }
+    public List<int>? WorkerIds { get; set; }
+    public bool IsBroadcast { get; set; } = false;
+}
 }
