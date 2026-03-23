@@ -251,12 +251,84 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (elCompleted) elCompleted.textContent = completed;
         if (elCancelled) elCancelled.textContent = cancelled;
 
-        // Rating: fetch from profile
         if (elRating) {
+            // Fetch real average rating from reviews API for better accuracy
+            fetch(`${API_BASE_URL}/api/reviews/worker/${workerProfileId}`)
+                .then(r => r.ok ? r.json() : null)
+                .then(reviewData => {
+                    if (reviewData) {
+                        elRating.textContent = (reviewData.averageRating || 0).toFixed(1);
+                    }
+                })
+                .catch(err => console.error("Lỗi tải điểm đánh giá:", err));
+
+            // Also fetch profile for availability switch status
             fetch(`${API_BASE_URL}/api/profiles/${workerProfileId}`)
-                .then(r => r.json())
-                .then(data => { elRating.textContent = (data.rating || 0).toFixed(1); })
-                .catch(() => {});
+                .then(r => r.ok ? r.json() : null)
+                .then(data => { 
+                    if (!data) return;
+                    
+                    // Init availability switch
+                    const statusSwitch = document.getElementById('statusSwitch');
+                    const statusText = document.getElementById('statusText');
+                    if (statusSwitch && statusText) {
+                        statusSwitch.checked = data.isActive !== false;
+                        updateStatusUI(statusSwitch.checked);
+                        
+                        statusSwitch.onchange = async () => {
+                            const newStatus = statusSwitch.checked;
+                            // Optimistic UI update
+                            updateStatusUI(newStatus);
+
+                            try {
+                                // Prepare full payload for update
+                                const updatePayload = {
+                                    nameOrStore: data.nameOrStore,
+                                    phoneNumber: data.phoneNumber,
+                                    address: data.address,
+                                    description: data.description,
+                                    services: data.services,
+                                    location: data.location,
+                                    avatarUrl: data.avatarUrl,
+                                    rating: data.rating,
+                                    isActive: newStatus
+                                };
+                                
+                                const res = await fetch(`${API_BASE_URL}/api/profiles/${workerProfileId}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(updatePayload)
+                                });
+                                
+                                if (!res.ok) {
+                                    // Revert on failure
+                                    statusSwitch.checked = !newStatus;
+                                    updateStatusUI(!newStatus);
+                                    alert('Không thể cập nhật trạng thái lên máy chủ.');
+                                }
+                            } catch (err) {
+                                console.error("Lỗi cập nhật trạng thái:", err);
+                                // Revert on error
+                                statusSwitch.checked = !newStatus;
+                                updateStatusUI(!newStatus);
+                                alert('Lỗi kết nối máy chủ khi cập nhật trạng thái.');
+                            }
+                        };
+                    }
+                })
+                .catch(err => console.error("Lỗi tải hồ sơ thợ:", err));
+        }
+    }
+
+    function updateStatusUI(isActive) {
+        const statusText = document.getElementById('statusText');
+        if (!statusText) return;
+        if (isActive) {
+            statusText.textContent = 'Sẵn sàng nhận việc';
+            statusText.className = 'text-success';
+        } else {
+            statusText.textContent = 'Đang nghỉ / Bận';
+            statusText.className = 'text-danger';
         }
     }
 
