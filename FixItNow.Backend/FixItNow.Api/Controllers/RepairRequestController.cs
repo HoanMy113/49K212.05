@@ -71,4 +71,23 @@ public class RepairRequestsController : ControllerBase
 
         return Ok(new { message = "Đã chấp nhận yêu cầu", request });
     }
+    // ====== US_09: Xem danh sách yêu cầu đã tạo (Khách hàng) ======
+    // Nhận Query Parameter là số điện thoại của khách hàng
+    // Endpoint: GET /api/RepairRequests?phone={phone}
+    [HttpGet]
+    public async Task<IActionResult> GetRequests([FromQuery] string? phone)
+    {
+        var query = _context.RepairRequests.AsQueryable();
+
+        // Lọc theo mảng CustomerPhone
+        if (!string.IsNullOrEmpty(phone))
+            query = query.Where(r => r.CustomerPhone == phone);
+
+        // Trả về kèm danh sách đã sắp xếp từ mới nhất đến cũ nhất
+        var requests = await query
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        return Ok(requests);
+    }
 }
