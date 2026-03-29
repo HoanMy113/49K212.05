@@ -90,4 +90,67 @@ public class RepairRequestsController : ControllerBase
 
         return Ok(requests);
     }
-}
+    // ====== US_12: CÁCH 1 - Cập nhật trạng thái công việc chung (Tùy biến) ======
+    // Nhận Payload JSON chứa thông tin Status mã số bao nhiêu. Dùng cho việc đa trạng thái.
+    [HttpPut("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto dto)
+    {
+        var request = await _context.RepairRequests.FindAsync(id);
+        if (request == null)
+            return NotFound(new { message = "Không tìm thấy yêu cầu" });
+
+        // Không cho phép vọc vạch sửa đơn đã Hủy
+        if (request.Status == RequestStatus.Cancelled)
+            return BadRequest(new { message = "Không thể cập nhật yêu cầu đã hủy" });
+
+        request.Status = (RequestStatus)dto.Status; // Cast từ số sang Enum
+        request.UpdatedAt = DateTime.Now;
+
+        // Bắn Push Noti về cho Khách hàng biết là thợ vừa bấm điện thoại đổi trạng thái
+        var statusLabel = request.Status == RequestStatus.Completed ? "Hoàn thành" : "Đang xử lý";
+        var notification = new Notification
+        {
+            UserPhone = request.CustomerPhone,
+            Title = $"🔄 Cập nhật trạng thái",
+            Message = $"Yêu cầu \"{request.Category}\" đã được cập nhật: {statusLabel}",
+            Type = "status_update",
+            RelatedRequestId = request.Id,
+            CreatedAt = DateTime.Now
+        };
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Đã cập nhật trạng thái", request });
+    }
+
+    // ====== US_12 & US_14: CÁCH 2 - Báo cáo Hoàn Thành Chuyên Biệt ======
+    // (Được sử dụng nhiều trên UI hiện tại)
+    [HttpPut("{id}/complete")]
+    public async Task<IActionResult> CompleteRequest(int id)
+    {
+        var request = await _context.RepairRequests.FindAsync(id);
+        if (request == null) return NotFound(new { message = "Không tìm thấy yêu cầu" });
+
+        // Phải là đơn đã chốt thợ nhận (Confirmed) thì mới được bấm Xong
+        if (request.Status != RequestStatus.Confirmed)
+            return BadRequest(new { message = "Chỉ có thể hoàn thành yêu cầu đã được xác nhận" });
+
+        request.Status = RequestStatus.Completed; // Chuyển chốt mã quy ước
+        request.UpdatedAt = DateTime.Now;
+
+        // Bắn Push Noti nhắc khách hàng chuẩn bị Vào App đánh giá sao cho thợ
+        var notification = new Notification
+        {
+            UserPhone = request.CustomerPhone,
+            Title = "✅ Yêu cầu đã hoàn thành",
+            Message = $"Thợ {request.WorkerName} đã hoàn thành yêu cầu \"{request.Category}\". Hãy để lại đánh giá nhé!",
+            Type = "completed",
+            RelatedRequestId = request.Id,
+            CreatedAt = DateTime.Now
+        };
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "Đã hoàn thành yêu cầu", request });
+    }
+    }
