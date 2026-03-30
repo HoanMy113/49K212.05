@@ -29,10 +29,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('userPhone', phone);
                 sessionStorage.setItem("userRole", currentRole); // Changed from currentRole to currentRole (was 'role' in instruction, but currentRole is the variable)
-                sessionStorage.setItem('userName', data.fullName || 'Người dùng'); // Moved this line up
+                sessionStorage.setItem('fullName', data.fullName || 'Người dùng');
                 
                 if (data.workerProfileId) {
                     sessionStorage.setItem("workerProfileId", data.workerProfileId);
+                }
+
+                // ====== BẢO MẬT: Lưu JWT Token để gọi API bảo mật ======
+                if (data.token) {
+                    sessionStorage.setItem('authToken', data.token);
+                }
+
+                if (data.avatarUrl) {
+                    const fullUrl = data.avatarUrl.startsWith("http") ? data.avatarUrl : (API_BASE_URL + data.avatarUrl);
+                    sessionStorage.setItem('userAvatar', fullUrl);
                 }
 
                 if (currentRole === "Repairman") { // Used currentRole for conditional redirect

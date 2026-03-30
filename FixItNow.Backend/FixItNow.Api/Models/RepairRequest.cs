@@ -28,6 +28,9 @@ public class RepairRequest
 	// Lưu danh sách ID thợ mục tiêu cho chế độ Multi-select dạng chuỗi: ",1,2,3,"
 	public string? TargetWorkerIds { get; set; }
 
+	// Lưu danh sách ID thợ đã từ chối yêu cầu Broadcast định dạng: ",1,2,3,"
+	public string? RejectedWorkerIds { get; set; }
+
 	// Broadcast: gửi cho tất cả thợ trong khu vực
 	public bool IsBroadcast { get; set; } = false;
 

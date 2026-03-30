@@ -8,9 +8,39 @@ document.addEventListener("DOMContentLoaded", function () {
     const workerProfileId = sessionStorage.getItem("workerProfileId");
     const profileId = workerProfileId || null;
 
-    // Set username in navbar
+    // Set username in navbar and header
+    const fullName = sessionStorage.getItem("fullName") || "Người dùng";
     const usernameEl = document.getElementById("username");
-    if (usernameEl) usernameEl.textContent = sessionStorage.getItem("userName") || "Người dùng";
+    const workerNameHeader = document.getElementById("workerNameHeader");
+    if (usernameEl) usernameEl.textContent = fullName;
+    if (workerNameHeader) workerNameHeader.textContent = fullName;
+
+    /* ================= AVATAR UPLOAD ================= */
+    const avatarInput = document.getElementById("avatarInput");
+    const btnBrowseAvatar = document.getElementById("btnBrowseAvatar");
+    const avatarPreview = document.getElementById("avatarPreview");
+
+    if (btnBrowseAvatar && avatarInput) {
+        btnBrowseAvatar.addEventListener("click", () => avatarInput.click());
+        avatarInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                // Validate size < 2MB
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("Dung lượng ảnh phải nhỏ hơn 2MB.");
+                    this.value = "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    avatarPreview.src = e.target.result;
+                    // Note: Here we'd call the API to upload if ready
+                    // For now, it stays as a local preview
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
 
     /* ================= USER DROPDOWN ================= */
     const userAvatar = document.getElementById("userAvatar");
@@ -182,6 +212,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 const svcName = cb.parentNode.textContent.trim();
                 cb.checked = !!(data.services && data.services.includes(svcName));
             });
+
+            // Load avatar from data
+            if (data.avatarUrl && avatarPreview) {
+                const fullUrl = data.avatarUrl.startsWith("http") ? data.avatarUrl : (API_BASE_URL + data.avatarUrl);
+                avatarPreview.src = fullUrl;
+                sessionStorage.setItem("userAvatar", fullUrl);
+            } else {
+                // Fallback to session if API doesn't have it yet
+                const savedAvatar = sessionStorage.getItem("userAvatar");
+                if (savedAvatar && avatarPreview) {
+                    avatarPreview.src = savedAvatar;
+                }
+            }
         } catch (err) { console.error("Lỗi tải hồ sơ:", err); }
     }
 
@@ -241,12 +284,45 @@ document.addEventListener("DOMContentLoaded", function () {
             btnSaveProfile.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
 
             try {
+                let avatarUrl = sessionStorage.getItem("userAvatar");
+
+                // 1. Upload ảnh nếu có file mới
+                if (avatarInput.files && avatarInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append("file", avatarInput.files[0]);
+
+                    const uploadRes = await fetch(`${API_BASE_URL}/api/Upload`, {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    if (uploadRes.ok) {
+                        const uploadData = await uploadRes.json();
+                        avatarUrl = uploadData.url;
+                    }
+                }
+
+                // 2. Cập nhật payload với AvatarUrl
+                payload.avatarUrl = avatarUrl;
+
                 const response = await fetch(apiUrl, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
                 if (response.ok) {
+                    // 3. Cập nhật dữ liệu local
+                    if (avatarUrl) {
+                        const fullAvatarUrl = avatarUrl.startsWith("http") ? avatarUrl : (API_BASE_URL + avatarUrl);
+                        sessionStorage.setItem("userAvatar", fullAvatarUrl);
+                        
+                        // Cập nhật UI ngay lập tức
+                        if (avatarPreview) avatarPreview.src = fullAvatarUrl;
+                        const navAvatar = document.querySelector("#userAvatar img");
+                        if (navAvatar) navAvatar.src = fullAvatarUrl;
+                    }
+
                     alert("Lưu thông tin thành công!");
                     loadProfile();
                 } else {
@@ -287,11 +363,11 @@ document.addEventListener("DOMContentLoaded", function () {
             btnChangePassword.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/Auth/change-password`, {
+                // ====== BẢO MẬT: Dùng authFetch gắn JWT Token thay vì Header X-User-Phone ======
+                const response = await authFetch(`${API_BASE_URL}/api/Auth/change-password`, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
-                        "X-User-Phone": userPhone
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         oldPassword: currentPassword,

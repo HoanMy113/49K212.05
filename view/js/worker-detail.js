@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const displayLocation = document.getElementById("displayLocation");
     const displayDescription = document.getElementById("displayDescription");
     const displayServices = document.getElementById("displayServices");
+    const displayAvatar = document.getElementById("displayAvatar");
 
     if (!workerId) {
         showError("Không tìm thấy thông tin thợ (Thiếu ID).");
@@ -52,6 +53,10 @@ document.addEventListener("DOMContentLoaded", function () {
         displayAddress.textContent = data.address || "Chưa cập nhật";
         displayLocation.textContent = data.location || "Chưa cập nhật";
         displayDescription.textContent = data.description || "Chưa có thông tin giới thiệu.";
+
+        if (data.avatarUrl && displayAvatar) {
+            displayAvatar.src = data.avatarUrl.startsWith('http') ? data.avatarUrl : (API_BASE_URL + data.avatarUrl);
+        }
 
         // Rating
         const rating = data.rating || 0;

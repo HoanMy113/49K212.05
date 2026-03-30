@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body { background-color: #f4f7f6; font-family: 'Nunito', sans-serif; }
+        body { background-color: #f4f7f6; font-family: 'Nunito', sans-serif; padding: 0 !important; margin: 0; }
 
         .dashboard-wrapper { display: flex; min-height: 100vh; }
 
@@ -20,9 +20,11 @@
             padding: 30px 20px;
             display: flex;
             flex-direction: column;
-            position: fixed;
+            position: sticky;
+            top: 0;
             height: 100vh;
             z-index: 100;
+            flex-shrink: 0;
         }
         .sidebar .brand {
             font-size: 24px; font-weight: 800; color: #4e7d63;
@@ -38,23 +40,21 @@
         .sidebar-link:hover, .sidebar-link.active { background: #eaf3ed; color: #4e7d63; }
         .sidebar-link i { font-size: 18px; width: 20px; text-align: center; }
         .logout-btn { color: #dc3545; margin-top: auto; }
-        .logout-btn:hover { background: #fdf7f7; color: #dc3545; }
-
-        .main-content { flex-grow: 1; margin-left: 250px; padding: 40px 50px; }
+        .logout-btn:hover { background: #fdf7f7; color: #dc3545; }        .main-content { flex-grow: 1; padding: 15px 25px; min-height: 100vh; }
 
         /* Page Header */
-        .page-header { margin-bottom: 36px; }
-        .page-header h2 { font-size: 26px; font-weight: 800; color: #1a1a2e; margin: 0 0 4px; }
-        .page-header p { color: #888; margin: 0; font-size: 15px; }
+        .page-header { margin-bottom: 15px; }
+        .page-header h2 { font-size: 21px; font-weight: 800; color: #1a1a2e; margin: 0; }
+        .page-header p { color: #888; margin: 0; font-size: 13px; }
 
         /* Tabs */
         .profile-tabs {
-            display: flex; gap: 0; margin-bottom: 32px;
+            display: flex; gap: 0; margin-bottom: 15px;
             border-bottom: 2px solid #eee;
         }
         .profile-tabs .tab-btn {
             background: none; border: none; color: #999;
-            font-weight: 700; font-size: 15px; padding: 14px 28px;
+            font-weight: 700; font-size: 13px; padding: 8px 18px;
             cursor: pointer; transition: all 0.25s; position: relative;
             border-bottom: 3px solid transparent; margin-bottom: -2px;
         }
@@ -68,24 +68,24 @@
 
         /* Card Section */
         .section-card {
-            background: white; border-radius: 16px;
-            padding: 36px 40px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-            margin-bottom: 28px;
+            background: white; border-radius: 12px;
+            padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            margin-bottom: 12px;
         }
         .section-label {
-            font-size: 13px; font-weight: 700; color: #aaa;
-            text-transform: uppercase; letter-spacing: 1.2px;
-            margin-bottom: 20px;
+            font-size: 11px; font-weight: 700; color: #aaa;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 10px;
         }
 
         /* Form */
         .form-label {
             font-weight: 700; color: #495057;
-            margin-bottom: 8px; font-size: 14px;
+            margin-bottom: 4px; font-size: 13.5px;
         }
         .form-control {
-            border-radius: 10px; padding: 12px 18px;
-            border: 1.5px solid #e0e0e0; font-size: 15px;
+            border-radius: 8px; padding: 8px 14px;
+            border: 1.5px solid #e0e0e0; font-size: 14px;
             font-family: 'Nunito', sans-serif; transition: all 0.3s;
         }
         .form-control:focus {
@@ -102,42 +102,79 @@
             background-position: right 12px center;
             background-size: 20px; padding-right: 40px;
         }
-        textarea.form-control { min-height: 80px; resize: vertical; }
+        textarea.form-control { min-height: 70px; resize: vertical; }
 
         .form-hint {
-            font-size: 13px; color: #aaa; margin-top: 6px; font-weight: 600;
+            font-size: 12px; color: #aaa; margin-top: 4px; font-weight: 600;
         }
 
         /* Address Grid */
-        .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .address-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
         /* Service Tags */
         .service-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 10px; margin-top: 10px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px; margin-top: 5px;
         }
         .service-grid label {
             display: flex; align-items: center; gap: 8px;
-            padding: 10px 14px; background: #fafafa; border-radius: 10px;
-            font-size: 14px; font-weight: 600; cursor: pointer;
+            padding: 8px 12px; background: #fafafa; border-radius: 8px;
+            font-size: 13.5px; font-weight: 600; cursor: pointer;
             transition: all 0.2s; border: 1.5px solid transparent;
         }
         .service-grid label:hover { background: #f0f7f3; }
         .service-grid label:has(input:checked) { background: #eaf3ed; border-color: #4e7d63; color: #2c5a3f; }
-        .service-grid img { width: 22px; height: 22px; object-fit: contain; }
+        .service-grid img { width: 20px; height: 20px; object-fit: contain; }
 
         /* Buttons */
         .btn-save {
             background: #4e7d63; color: white; border: none;
-            padding: 12px 36px; border-radius: 10px;
-            font-weight: 700; font-size: 15px; transition: all 0.3s;
+            padding: 8px 24px; border-radius: 8px;
+            font-weight: 700; font-size: 14px; transition: all 0.3s;
         }
         .btn-save:hover { background: #3d6a53; color: white; transform: translateY(-1px); }
         .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
         .validation-error {
-            color: #e74c3c; font-size: 13px; font-weight: 600;
-            margin-top: 5px; display: none;
+            color: #e74c3c; font-size: 12px; font-weight: 600;
+            margin-top: 4px; display: none;
+        }
+
+        /* Avatar Upload Styling */
+        .profile-avatar-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 0;
+        }
+        .avatar-preview-container {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid #fff;
+        }
+        .avatar-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .btn-change-avatar {
+            background: #fff;
+            border: 1.5px solid #e0e0e0;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #555;
+            transition: all 0.2s;
+        }
+        .btn-change-avatar:hover {
+            border-color: #4e7d63;
+            color: #4e7d63;
+            background: #f0f7f3;
         }
     </style>
 </head>
@@ -158,126 +195,150 @@
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
-            <div class="page-header">
-                <h2>Tài khoản</h2>
-                <p>Quản lý thông tin cá nhân và bảo mật tài khoản của bạn</p>
-            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10 col-xl-9 col-xxl-8">
+                    
+                    <div class="page-header">
+                        <h2>Tài khoản</h2>
+                        <p>Quản lý thông tin cá nhân và bảo mật tài khoản của bạn</p>
+                    </div>
 
-            <!-- TABS -->
-            <div class="profile-tabs">
-                <button class="tab-btn active" data-tab="info">Thông tin cá nhân</button>
-                <button class="tab-btn" data-tab="password">Đổi mật khẩu</button>
-            </div>
+                    <!-- TABS -->
+                    <div class="profile-tabs">
+                        <button class="tab-btn active" data-tab="info">Thông tin cá nhân</button>
+                        <button class="tab-btn" data-tab="password">Đổi mật khẩu</button>
+                    </div>
 
-            <!-- TAB 1: Personal Info -->
-            <div class="tab-pane active" id="tab-info">
-                <form id="profileForm">
-                    <!-- Basic Info -->
-                    <div class="section-card">
-                        <div class="section-label">Thông tin cơ bản</div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="inputName" class="form-label">Họ và tên / Tên cửa hàng</label>
-                                <input type="text" class="form-control" id="inputName" placeholder="Nguyễn Văn A" required>
-                                <div class="validation-error" id="nameError"></div>
+                    <!-- TAB 1: Personal Info -->
+                    <div class="tab-pane active" id="tab-info">
+                        <form id="profileForm">
+                            <!-- Avatar Section -->
+                            <div class="section-card mb-4">
+                                <div class="section-label">Ảnh đại diện</div>
+                                <div class="profile-avatar-section">
+                                    <div class="avatar-preview-container">
+                                        <img src="assets/images/user.png" id="avatarPreview" alt="Avatar">
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-2" id="workerNameHeader">Hồ sơ thợ sửa chữa</h6>
+                                        <button type="button" class="btn-change-avatar" id="btnBrowseAvatar">
+                                            <i class="fa-solid fa-camera me-2"></i> Thay đổi ảnh
+                                        </button>
+                                        <input type="file" id="avatarInput" hidden accept="image/*">
+                                        <p class="form-hint mb-0 mt-2">Đề xuất tỉ lệ 1:1, dung lượng < 2MB (JPG, PNG)</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="inputPhone" class="form-label">Số điện thoại</label>
-                                <input type="text" class="form-control" id="inputPhone" readonly>
-                                <div class="form-hint">Số điện thoại là tài khoản đăng nhập, không thể thay đổi.</div>
+
+                            <!-- Basic Info -->
+                            <div class="section-card mb-4">
+                                <div class="section-label">Thông tin cơ bản</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="inputName" class="form-label">Họ và tên / Tên cửa hàng</label>
+                                        <input type="text" class="form-control" id="inputName" placeholder="Nguyễn Văn A" required>
+                                        <div class="validation-error" id="nameError"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="inputPhone" class="form-label">Số điện thoại</label>
+                                        <input type="text" class="form-control" id="inputPhone" readonly>
+                                        <div class="form-hint">Số điện thoại là tài khoản đăng nhập, không thể thay đổi.</div>
+                                    </div>
+                                </div>
                             </div>
+
+                            <!-- Address -->
+                            <div class="section-card mb-4">
+                                <div class="section-label">Địa chỉ hoạt động</div>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="provinceSelect" class="form-label">Tỉnh / Thành phố</label>
+                                        <select id="provinceSelect" class="form-control">
+                                            <option value="">-- Chọn tỉnh/TP --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="districtSelect" class="form-label">Quận / Huyện</label>
+                                        <select id="districtSelect" class="form-control">
+                                            <option value="">-- Chọn quận/huyện --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="wardSelect" class="form-label">Phường / Xã</label>
+                                        <select id="wardSelect" class="form-control">
+                                            <option value="">-- Chọn phường/xã --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <label for="detailAddress" class="form-label">Địa chỉ chi tiết</label>
+                                        <input type="text" class="form-control" id="detailAddress" placeholder="Số nhà, tên đường, ngõ hẻm...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="section-card mb-4">
+                                <div class="section-label">Giới thiệu</div>
+                                <div class="mb-3">
+                                    <label for="inputDescription" class="form-label">Mô tả dịch vụ / Kinh nghiệm</label>
+                                    <textarea class="form-control" id="inputDescription" placeholder="Giới thiệu kinh nghiệm, chứng chỉ nghề nghiệp..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Services -->
+                            <div class="section-card mb-4">
+                                <div class="section-label">Dịch vụ cung cấp</div>
+                                <div class="service-grid">
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/electrical.png"> Sửa điện</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/Plumbing.png"> Sửa ống nước</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/Air_conditioner.png"> Sửa máy lạnh</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/washing-machine.png"> Sửa máy giặt</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/refrigerator.png"> Sửa tủ lạnh</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/gas.png"> Sửa bếp gas</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/light.png"> Lắp bóng đèn</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/ceiling_fan.png"> Lắp quạt trần</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/drain.png"> Thông tắc cống</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/lock.png"> Sửa khóa cửa</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/drill.png"> Khoan treo kệ</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/paint.png"> Sơn sửa nhỏ</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/curtains.png"> Lắp rèm cửa</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/Waterheater.png"> Sửa bình nóng lạnh</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/pump.png"> Sửa máy bơm</label>
+                                    <label><input type="checkbox" class="service"> <img src="assets/images/camera.png"> Lắp camera</label>
+                                </div>
+                            </div>
+
+                            <div class="text-end mt-4">
+                                <button type="submit" class="btn btn-save" id="btnSaveProfile">Lưu thông tin hồ sơ</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- TAB 2: Change Password -->
+                    <div class="tab-pane" id="tab-password">
+                        <div class="section-card" style="max-width: 550px; margin: 0 auto;">
+                            <div class="section-label">Bảo mật tài khoản</div>
+                            <form id="passwordForm">
+                                <div class="mb-3">
+                                    <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+                                    <input type="password" class="form-control" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                                    <input type="password" class="form-control" id="newPassword" placeholder="Tối thiểu 6 ký tự" required>
+                                    <div class="form-hint">Mật khẩu phải có ít nhất 6 ký tự.</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+                                    <input type="password" class="form-control" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-save" id="btnChangePassword">Cập nhật mật khẩu</button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
-                    <!-- Address -->
-                    <div class="section-card">
-                        <div class="section-label">Địa chỉ hoạt động</div>
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="provinceSelect" class="form-label">Tỉnh / Thành phố</label>
-                                <select id="provinceSelect" class="form-control">
-                                    <option value="">-- Chọn tỉnh/TP --</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="districtSelect" class="form-label">Quận / Huyện</label>
-                                <select id="districtSelect" class="form-control">
-                                    <option value="">-- Chọn quận/huyện --</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="wardSelect" class="form-label">Phường / Xã</label>
-                                <select id="wardSelect" class="form-control">
-                                    <option value="">-- Chọn phường/xã --</option>
-                                </select>
-                            </div>
-                            <div class="col-12 mt-2">
-                                <label for="detailAddress" class="form-label">Địa chỉ chi tiết</label>
-                                <input type="text" class="form-control" id="detailAddress" placeholder="Số nhà, tên đường, ngõ hẻm...">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="section-card">
-                        <div class="section-label">Giới thiệu</div>
-                        <div class="mb-3">
-                            <label for="inputDescription" class="form-label">Mô tả dịch vụ / Kinh nghiệm</label>
-                            <textarea class="form-control" id="inputDescription" placeholder="Giới thiệu kinh nghiệm, chứng chỉ nghề nghiệp..."></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Services -->
-                    <div class="section-card">
-                        <div class="section-label">Dịch vụ cung cấp</div>
-                        <div class="service-grid">
-                            <label><input type="checkbox" class="service"> <img src="assets/images/electrical.png"> Sửa điện</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/Plumbing.png"> Sửa ống nước</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/Air_conditioner.png"> Sửa máy lạnh</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/washing-machine.png"> Sửa máy giặt</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/refrigerator.png"> Sửa tủ lạnh</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/gas.png"> Sửa bếp gas</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/light.png"> Lắp bóng đèn</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/ceiling_fan.png"> Lắp quạt trần</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/drain.png"> Thông tắc cống</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/lock.png"> Sửa khóa cửa</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/drill.png"> Khoan treo kệ</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/paint.png"> Sơn sửa nhỏ</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/curtains.png"> Lắp rèm cửa</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/Waterheater.png"> Sửa bình nóng lạnh</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/pump.png"> Sửa máy bơm</label>
-                            <label><input type="checkbox" class="service"> <img src="assets/images/camera.png"> Lắp camera</label>
-                        </div>
-                    </div>
-
-                    <div class="text-end mt-2">
-                        <button type="submit" class="btn btn-save" id="btnSaveProfile">Lưu thông tin</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- TAB 2: Change Password -->
-            <div class="tab-pane" id="tab-password">
-                <div class="section-card" style="max-width: 500px;">
-                    <div class="section-label">Bảo mật</div>
-                    <form id="passwordForm">
-                        <div class="mb-3">
-                            <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
-                            <input type="password" class="form-control" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">Mật khẩu mới</label>
-                            <input type="password" class="form-control" id="newPassword" placeholder="Tối thiểu 6 ký tự" required>
-                            <div class="form-hint">Mật khẩu phải có ít nhất 6 ký tự.</div>
-                        </div>
-                        <div class="mb-4">
-                            <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
-                            <input type="password" class="form-control" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
-                        </div>
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-save" id="btnChangePassword">Cập nhật mật khẩu</button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </main>

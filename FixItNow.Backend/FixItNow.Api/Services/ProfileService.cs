@@ -37,7 +37,10 @@ public class ProfileService : IProfileService
         profile.Description = request.Description;
         profile.Services = request.Services ?? new List<string>();
         profile.Location = request.Location ?? string.Empty;
-        profile.Rating = request.Rating;
+        profile.AvatarUrl = request.AvatarUrl;
+        profile.IsActive = request.IsActive;
+        // ====== BẢO MẬT: KHÔNG cho thợ tự đặt Rating — chỉ ReviewsController mới được cập nhật ======
+        // profile.Rating = request.Rating;  // ĐÃ XÓA ĐỂ CHỐNG GIẢ MẠO ĐIỂM
 
         await _context.SaveChangesAsync();
         return profile;
@@ -45,7 +48,7 @@ public class ProfileService : IProfileService
 
     public async Task<List<WorkerProfile>> SearchProfilesAsync(string? category, string? location)
     {
-        var query = _context.WorkerProfiles.AsQueryable();
+        var query = _context.WorkerProfiles.Where(w => w.IsActive).AsQueryable();
 
         // 1. Fetch all to memory if needed, or query directly. In-memory DB evaluates locally anyway.
         // For standard databases, it's better to fetch all and filter if using complex string splits, 

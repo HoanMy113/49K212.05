@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         return; // Dừng thực thi script cho đến khi chuyển trang
     }
 
-    if (sessionStorage.getItem("role") === "Worker") {
+    // ====== BẢO MẬT: Sửa đúng key sessionStorage (login.js lưu "userRole" với giá trị "Repairman") ======
+    if (sessionStorage.getItem("userRole") === "Repairman") {
         showModal("Thợ sửa chữa không thể tạo yêu cầu. Vui lòng đăng nhập bằng tài khoản Khách hàng.", "warning", { onClose: () => window.location.href = "index.html" });
         return;
     }
@@ -92,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
 
     // Auto-fill thông tin từ session nếu đã đăng nhập
-    const sessionName = sessionStorage.getItem("userName");
+    const sessionName = sessionStorage.getItem("fullName");
     const sessionPhone = sessionStorage.getItem("userPhone");
     if (sessionName) document.getElementById("customerName").value = sessionName;
     if (sessionPhone) document.getElementById("customerPhone").value = sessionPhone;

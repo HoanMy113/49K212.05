@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using FixItNow.Api.Data;
 using FixItNow.Api.Models;
 using FixItNow.Api.DTOs;
+using FixItNow.Api.Helpers;
 
 namespace FixItNow.Api.Controllers;
 
@@ -199,13 +200,16 @@ public class RepairRequestsController : ControllerBase
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
 
-        // Lấy thêm đơn Broadcast và đơn Multi-select (Grab style) đang chờ
-        var stringId = $",{workerId},";
-        var broadcastRequests = await _context.RepairRequests
-            .Where(r => (r.IsBroadcast || (r.TargetWorkerIds != null && r.TargetWorkerIds.Contains(stringId)))
-                        && r.Status == RequestStatus.Pending && r.WorkerId == null)
+        // ====== BẢO MẬT: Dùng CsvHelper thay vì string.Contains() để tránh sai logic ID ======
+        var allPendingRequests = await _context.RepairRequests
+            .Where(r => r.Status == RequestStatus.Pending && r.WorkerId == null)
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
+
+        var broadcastRequests = allPendingRequests
+            .Where(r => (r.IsBroadcast || CsvHelper.CsvContains(r.TargetWorkerIds, workerId))
+                        && !CsvHelper.CsvContains(r.RejectedWorkerIds, workerId))
+            .ToList();
 
         var combined = directRequests
             .Concat(broadcastRequests)
@@ -217,7 +221,7 @@ public class RepairRequestsController : ControllerBase
     }
 
     // ====== US_06: Chấp nhận yêu cầu ======
-    // ====== US_07: Hệ thống xác nhận thợ đầu tiên ======
+    // ====== US_07: Hệ thống xác nhận thợ đầu tiên (Race Condition Safe) ======
     [HttpPut("{id}/accept")]
     public async Task<IActionResult> AcceptRequest(int id, [FromQuery] int? workerId)
     {
@@ -225,31 +229,42 @@ public class RepairRequestsController : ControllerBase
         if (request == null)
             return NotFound(new { message = "Không tìm thấy yêu cầu" });
 
-        // US_07: Chỉ thợ đầu tiên chấp nhận mới được xác nhận (Race condition safe)
+        // ====== BẢO MẬT: Kiểm tra trạng thái trước (nhanh, tránh query thừa) ======
         if (request.Status != RequestStatus.Pending)
             return BadRequest(new { message = "Yêu cầu này đã được xử lý bởi thợ khác" });
 
-        // Nếu là đơn Broadcast hoặc Multi-select (Grab-style), gán thợ nhận
+        // Xác định thông tin thợ nhận
+        int assignedWorkerId = request.WorkerId ?? 0;
+        string assignedWorkerName = request.WorkerName;
+
         if ((request.IsBroadcast || !string.IsNullOrEmpty(request.TargetWorkerIds)) && workerId.HasValue)
         {
             var worker = await _context.WorkerProfiles.FindAsync(workerId.Value);
             if (worker != null)
             {
                 // Kiểm tra quyền đối với đơn Multi-select
-                if (!request.IsBroadcast && !string.IsNullOrEmpty(request.TargetWorkerIds) && !request.TargetWorkerIds.Contains($",{workerId.Value},"))
+                if (!request.IsBroadcast && !string.IsNullOrEmpty(request.TargetWorkerIds) && !CsvHelper.CsvContains(request.TargetWorkerIds, workerId.Value))
                 {
                     return BadRequest(new { message = "Bạn không có quyền nhận yêu cầu này" });
                 }
 
-                request.WorkerId = workerId.Value;
-                request.WorkerName = worker.NameOrStore;
+                assignedWorkerId = workerId.Value;
+                assignedWorkerName = worker.NameOrStore;
             }
         }
 
-        request.Status = RequestStatus.Confirmed;
-        request.UpdatedAt = DateTime.Now;
+        // ====== BẢO MẬT: Atomic UPDATE — chỉ 1 thợ duy nhất chốt được ======
+        var rowsAffected = await _context.Database.ExecuteSqlRawAsync(
+            "UPDATE RepairRequests SET Status = 1, WorkerId = {0}, WorkerName = {1}, UpdatedAt = {2} WHERE Id = {3} AND Status = 0",
+            assignedWorkerId, assignedWorkerName, DateTime.Now, id);
 
-        // US_08: Thông báo cho khách hàng
+        if (rowsAffected == 0)
+            return BadRequest(new { message = "Yêu cầu này đã được xử lý bởi thợ khác" });
+
+        // Reload lại data sau khi update thành công
+        await _context.Entry(request).ReloadAsync();
+
+        // US_08: Thông báo cho khách hàng (GIỮ NGUYÊN)
         var notification = new Notification
         {
             UserPhone = request.CustomerPhone,
@@ -281,11 +296,11 @@ public class RepairRequestsController : ControllerBase
         {
             if (workerId.HasValue && !string.IsNullOrEmpty(request.TargetWorkerIds))
             {
-                // Xóa thợ khỏi danh sách mục tiêu
-                request.TargetWorkerIds = request.TargetWorkerIds.Replace($",{workerId.Value},", ",");
+                // ====== BẢO MẬT: Dùng CsvHelper xóa ID an toàn ======
+                request.TargetWorkerIds = CsvHelper.CsvRemove(request.TargetWorkerIds, workerId.Value);
                 
                 // Nếu không còn thợ nào trong danh sách mục tiêu -> Hủy luôn đơn
-                if (request.TargetWorkerIds == "," || string.IsNullOrWhiteSpace(request.TargetWorkerIds.Replace(",", "")))
+                if (CsvHelper.CsvIsEmpty(request.TargetWorkerIds))
                 {
                     request.Status = RequestStatus.Cancelled;
                     request.UpdatedAt = DateTime.Now;
@@ -302,8 +317,12 @@ public class RepairRequestsController : ControllerBase
                     _context.Notifications.Add(notif);
                 }
             }
-            // Với Broadcast thực sự (không có danh sách), không làm gì thêm ở server
-            // Client sẽ tự ẩn đi khỏi giao diện của thợ đó.
+            // Với Broadcast thực sự (không có danh sách mục tiêu), thêm thợ vào danh sách đã từ chối
+            // ====== BẢO MẬT: Dùng CsvHelper thêm ID vào danh sách từ chối ======
+            if (request.IsBroadcast && workerId.HasValue)
+            {
+                request.RejectedWorkerIds = CsvHelper.CsvAdd(request.RejectedWorkerIds, workerId.Value);
+            }
         }
         else 
         {
@@ -330,11 +349,15 @@ public class RepairRequestsController : ControllerBase
 
     // ====== US_13: Hủy yêu cầu (Khách) ======
     [HttpPut("{id}/cancel")]
-    public async Task<IActionResult> CancelRequest(int id)
+    public async Task<IActionResult> CancelRequest(int id, [FromQuery] string? customerPhone)
     {
         var request = await _context.RepairRequests.FindAsync(id);
         if (request == null)
             return NotFound(new { message = "Không tìm thấy yêu cầu" });
+
+        // ====== BẢO MẬT: Xác minh người gọi API là chủ đơn ======
+        if (!string.IsNullOrEmpty(customerPhone) && request.CustomerPhone != customerPhone)
+            return BadRequest(new { message = "Bạn không có quyền hủy yêu cầu này" });
 
         if (request.Status != RequestStatus.Pending)
             return BadRequest(new { message = "Chỉ có thể hủy yêu cầu đang ở trạng thái 'Đang chờ'" });
@@ -407,6 +430,10 @@ public class RepairRequestsController : ControllerBase
 
         if (request.Status == RequestStatus.Cancelled)
             return BadRequest(new { message = "Không thể cập nhật yêu cầu đã hủy" });
+
+        // ====== BẢO MẬT: Validate giá trị Status hợp lệ trước khi cast ======
+        if (!Enum.IsDefined(typeof(RequestStatus), dto.Status))
+            return BadRequest(new { message = "Trạng thái không hợp lệ" });
 
         request.Status = (RequestStatus)dto.Status;
         request.UpdatedAt = DateTime.Now;

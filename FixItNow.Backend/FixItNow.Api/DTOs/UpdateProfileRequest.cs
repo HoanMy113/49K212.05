@@ -8,5 +8,7 @@ public class UpdateProfileRequest
     public string Description { get; set; } = string.Empty;
     public List<string> Services { get; set; } = new List<string>();
     public string Location { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
     public double Rating { get; set; } = 0.0;
+    public bool IsActive { get; set; }
 }

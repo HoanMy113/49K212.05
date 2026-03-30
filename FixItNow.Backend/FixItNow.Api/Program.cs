@@ -42,6 +42,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 
+app.UseStaticFiles(); // Cho phép truy cập ảnh từ wwwroot
+
 app.UseCors("AllowAll");
 
 app.UseAuthorization();

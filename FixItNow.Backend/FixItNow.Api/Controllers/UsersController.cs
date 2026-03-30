@@ -17,6 +17,22 @@ public class UsersController : ControllerBase
         _context = context;
     }
 
+    [HttpGet("{phone}")]
+    public async Task<IActionResult> GetUser(string phone)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Phone == phone);
+        if (user == null) return NotFound("Người dùng không tồn tại.");
+
+        return Ok(new 
+        { 
+            user.FullName, 
+            user.Phone, 
+            user.Role,
+            user.AvatarUrl,
+            user.WorkerProfileId
+        });
+    }
+
     [HttpPut("{phone}")]
     public async Task<IActionResult> UpdateProfile(string phone, [FromBody] UserUpdateDto dto)
     {
@@ -24,12 +40,17 @@ public class UsersController : ControllerBase
         if (user == null) return NotFound("Người dùng không tồn tại.");
 
         user.FullName = dto.FullName;
+        user.AvatarUrl = dto.AvatarUrl;
         
-        // Also update WorkerProfile name if applicable
+        // Also update WorkerProfile name and avatar if applicable
         if (user.WorkerProfileId.HasValue)
         {
             var profile = await _context.WorkerProfiles.FindAsync(user.WorkerProfileId.Value);
-            if (profile != null) profile.NameOrStore = dto.FullName;
+            if (profile != null) 
+            {
+                profile.NameOrStore = dto.FullName;
+                profile.AvatarUrl = dto.AvatarUrl;
+            }
         }
 
         await _context.SaveChangesAsync();

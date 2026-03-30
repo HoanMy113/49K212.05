@@ -229,7 +229,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ====== CANCEL ======
     async function cancelRequest(id) {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/RepairRequests/${id}/cancel`, { method: 'PUT' });
+            // ====== BẢO MẬT: Gửi customerPhone để backend xác minh quyền hủy ======
+            const userPhone = sessionStorage.getItem('userPhone');
+            const cancelUrl = userPhone 
+                ? `${API_BASE_URL}/api/RepairRequests/${id}/cancel?customerPhone=${encodeURIComponent(userPhone)}`
+                : `${API_BASE_URL}/api/RepairRequests/${id}/cancel`;
+            const response = await fetch(cancelUrl, { method: 'PUT' });
             if (response.ok) {
                 if (typeof showModal !== 'undefined') showModal('Đã hủy yêu cầu thành công.', 'success', { autoClose: 2000 });
                 else alert('Hủy yêu cầu thành công.');

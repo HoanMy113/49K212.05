@@ -16,5 +16,6 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public UserRole Role { get; set; }
     public int? WorkerProfileId { get; set; } // Link to WorkerProfile if Role is Worker
+    public string? AvatarUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now;
 }

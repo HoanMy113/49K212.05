@@ -4,6 +4,7 @@ using FixItNow.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FixItNow.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260315070118_AddAvatarUrl")]
+    partial class AddAvatarUrl
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,9 +99,6 @@ namespace FixItNow.Api.Migrations
 
                     b.Property<bool>("IsBroadcast")
                         .HasColumnType("bit");
-
-                    b.Property<string>("RejectedWorkerIds")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -329,9 +329,6 @@ namespace FixItNow.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -361,7 +358,6 @@ namespace FixItNow.Api.Migrations
                             Id = 101,
                             Address = "123 Lê Lợi, Quận 1",
                             Description = "Sửa điện nhanh chóng, an toàn",
-                            IsActive = true,
                             Location = "Hồ Chí Minh",
                             NameOrStore = "Thợ Điện Nguyễn Văn A",
                             PhoneNumber = "0900000001",
@@ -373,7 +369,6 @@ namespace FixItNow.Api.Migrations
                             Id = 102,
                             Address = "456 Trần Hưng Đạo, Hoàn Kiếm",
                             Description = "Chuyên sửa ống nước, vòi sen",
-                            IsActive = true,
                             Location = "Hà Nội",
                             NameOrStore = "Trần Thị B Dịch Vụ Nước",
                             PhoneNumber = "0900000002",
@@ -385,7 +380,6 @@ namespace FixItNow.Api.Migrations
                             Id = 103,
                             Address = "789 Nguyễn Văn Linh, Hải Châu",
                             Description = "Thay lốc tủ lạnh, kiểm tra tivi",
-                            IsActive = true,
                             Location = "Đà Nẵng",
                             NameOrStore = "Cửa hàng Sửa Chữa C",
                             PhoneNumber = "0900000003",
@@ -397,7 +391,6 @@ namespace FixItNow.Api.Migrations
                             Id = 104,
                             Address = "101 Lý Tự Trọng, Ninh Kiều",
                             Description = "Nhận sửa mọi thứ trong nhà",
-                            IsActive = true,
                             Location = "Cần Thơ",
                             NameOrStore = "Lê Văn D - Đa năng",
                             PhoneNumber = "0900000004",
@@ -409,7 +402,6 @@ namespace FixItNow.Api.Migrations
                             Id = 105,
                             Address = "202 Đồng Khởi, Biên Hòa",
                             Description = "Chuyên sửa cửa gỗ, tủ gỗ",
-                            IsActive = true,
                             Location = "Đồng Nai",
                             NameOrStore = "Phạm Văn E Mộc",
                             PhoneNumber = "0900000005",

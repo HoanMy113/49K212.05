@@ -20,6 +20,17 @@ public class ReviewsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> AddReview([FromBody] ReviewDto dto)
     {
+        // ====== BẢO MẬT: Validate Rating phải nằm trong khoảng 1–5 ======
+        if (dto.Rating < 1 || dto.Rating > 5)
+            return BadRequest(new { message = "Điểm đánh giá phải từ 1 đến 5 sao." });
+
+        // ====== BẢO MẬT: Chỉ cho đánh giá đơn đã Hoàn thành ======
+        var request = await _context.RepairRequests.FindAsync(dto.RequestId);
+        if (request == null)
+            return NotFound(new { message = "Không tìm thấy yêu cầu." });
+        if (request.Status != Models.RequestStatus.Completed)
+            return BadRequest(new { message = "Chỉ có thể đánh giá yêu cầu đã hoàn thành." });
+
         // Kiểm tra đã đánh giá cho đơn này chưa
         var existingReview = await _context.Reviews
             .FirstOrDefaultAsync(r => r.RequestId == dto.RequestId);

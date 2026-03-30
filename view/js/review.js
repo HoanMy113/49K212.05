@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const comment = document.getElementById('comment').value;
-        const customerName = sessionStorage.getItem('userName') || sessionStorage.getItem('fullName') || 'Khách hàng';
+        const customerName = sessionStorage.getItem('fullName') || 'Khách hàng';
 
         const payload = {
             requestId: parseInt(requestId),

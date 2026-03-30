@@ -77,7 +77,8 @@ public class AuthController : ControllerBase
             fullName = user.FullName, 
             phone = user.Phone, 
             role = user.Role.ToString(),
-            workerProfileId = user.WorkerProfileId
+            workerProfileId = user.WorkerProfileId,
+            avatarUrl = user.AvatarUrl
         });
     }
 

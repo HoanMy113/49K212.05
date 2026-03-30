@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-    const userName = sessionStorage.getItem('userName');
+    const fullName = sessionStorage.getItem('fullName');
     const userPhone = sessionStorage.getItem('userPhone');
 
     if (isLoggedIn !== 'true') {
@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneInput = document.getElementById('phone');
     const accountForm = document.getElementById('accountForm');
 
-    accountName.textContent = userName;
+    accountName.textContent = fullName;
     accountPhone.textContent = userPhone;
-    fullNameInput.value = userName;
+    fullNameInput.value = fullName;
     phoneInput.value = userPhone;
 
     accountForm.addEventListener('submit', async (e) => {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                sessionStorage.setItem('userName', updatedName);
+                sessionStorage.setItem('fullName', updatedName);
                 alert('Cập nhật thông tin thành công!');
                 location.reload();
             } else {

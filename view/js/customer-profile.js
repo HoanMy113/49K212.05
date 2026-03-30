@@ -23,28 +23,73 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let currentUserId = null;
 
+    /* ================= AVATAR UPLOAD ================= */
+    const avatarInput = document.getElementById("avatarInput");
+    const btnBrowseAvatar = document.getElementById("btnBrowseAvatar");
+    const avatarPreview = document.getElementById("profileImagePreview");
+
+    if (btnBrowseAvatar && avatarInput) {
+        btnBrowseAvatar.addEventListener("click", () => avatarInput.click());
+        avatarInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("Dung lượng ảnh phải nhỏ hơn 2MB.");
+                    this.value = "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    if (avatarPreview) avatarPreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
     // Load Profile
     async function loadProfile() {
         try {
-            // Because there's no specific /api/customers endpoint in the provided context
-            // We search users by phone or get the profile. We'll use the generic user endpoint if available,
-            // or fallback to sessionStorage data.
-            // Since the user requested "Hồ sơ của tôi không cần tạo hồ sơ nữa", and it's just name/phone + password change
-            // we first check if there's a user profile API.
+            const res = await authFetch(`${API_BASE_URL}/api/Users/${userPhone}`);
+            if (!res.ok) throw new Error("Không thể tải thông tin từ server.");
             
-            // Using a simple trick: Just try to load from sessionStorage first
-            const sessionName = sessionStorage.getItem("fullName");
-            if (sessionName) fullNameInput.value = sessionName;
-            phoneNumberInput.value = userPhone;
+            const data = await res.json();
             
+            fullNameInput.value = data.fullName || "";
+            document.getElementById("displayFullName").textContent = data.fullName || "Người dùng";
+            
+            const usernameEl = document.getElementById("username");
+            if (usernameEl) usernameEl.textContent = data.fullName || "Người dùng";
+            
+            phoneNumberInput.value = data.phone || userPhone;
+            
+            // Sync session if needed
+            sessionStorage.setItem("fullName", data.fullName);
+
+            // Load avatar from data
+            if (data.avatarUrl && avatarPreview) {
+                const fullUrl = data.avatarUrl.startsWith("http") ? data.avatarUrl : (API_BASE_URL + data.avatarUrl);
+                avatarPreview.src = fullUrl;
+                sessionStorage.setItem("userAvatar", fullUrl);
+            } else {
+                // Fallback to session
+                const savedAvatar = sessionStorage.getItem("userAvatar");
+                if (savedAvatar && avatarPreview) {
+                    avatarPreview.src = savedAvatar;
+                }
+            }
         } catch (error) {
             console.error("Lỗi khi tải hồ sơ:", error);
+            // Fallback to session if API fails
+            const sessionName = sessionStorage.getItem("fullName");
+            if (sessionName) {
+                fullNameInput.value = sessionName;
+                document.getElementById("displayFullName").textContent = sessionName;
+            }
         }
     }
 
-    // Update Profile (Name) - since customers might not have a full profile row, we only update session for now
-    // or if a specific PUT /api/users/{id} exists, we would call it. The prompt stated customers just need
-    // their name locked and able to change password.
+    // Update Profile (Name)
     profileForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         
@@ -58,11 +103,60 @@ document.addEventListener("DOMContentLoaded", async function () {
         btnUpdateProfile.textContent = "Đang lưu...";
 
         try {
-            // Ideally we'd call an API here. If not available, we just update session
-            // Assuming no specific PUT /api/customers exists based on previous history, 
-            // but we will mock a successful update.
+            let avatarUrl = sessionStorage.getItem("userAvatar");
+
+            // 1. Nếu có file mới được chọn, upload trước
+            if (avatarInput.files && avatarInput.files[0]) {
+                const formData = new FormData();
+                formData.append("file", avatarInput.files[0]);
+
+                const uploadRes = await fetch(`${API_BASE_URL}/api/Upload`, {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (uploadRes.ok) {
+                    const uploadData = await uploadRes.json();
+                    avatarUrl = uploadData.url; // Đây là đường dẫn tương đối VD: /uploads/abc.jpg
+                }
+            }
+
+            // 2. Cập nhật thông tin profile qua API
+            const updatePayload = {
+                fullName: newName,
+                avatarUrl: avatarUrl
+            };
+
+            const response = await authFetch(`${API_BASE_URL}/api/Users/${userPhone}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updatePayload)
+            });
+
+            if (!response.ok) throw new Error("Không thể cập nhật thông tin trên server.");
+
+            // 3. Cập nhật dữ liệu local
             sessionStorage.setItem("fullName", newName);
+            if (avatarUrl) {
+                // Đảm bảo URL đầy đủ nếu cần, hoặc cứ để tương đối
+                const fullAvatarUrl = avatarUrl.startsWith("http") ? avatarUrl : (API_BASE_URL + avatarUrl);
+                sessionStorage.setItem("userAvatar", fullAvatarUrl);
+                
+                // Cập nhật UI ngay lập tức
+                if (avatarPreview) avatarPreview.src = fullAvatarUrl;
+                const navAvatar = document.querySelector("#userAvatar img");
+                if (navAvatar) navAvatar.src = fullAvatarUrl;
+            }
             
+            // Update UI name
+            const displayFullName = document.getElementById("displayFullName");
+            if (displayFullName) displayFullName.textContent = newName;
+
+            const usernameEl = document.getElementById("username");
+            if (usernameEl) usernameEl.textContent = newName;
+
             alert("Cập nhật thông tin thành công!");
             
         } catch (error) {
@@ -70,7 +164,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             alert("Lỗi khi cập nhật thông tin.");
         } finally {
             btnUpdateProfile.disabled = false;
-            btnUpdateProfile.textContent = "Lưu thông tin";
+            btnUpdateProfile.textContent = "Lưu thay đổi";
         }
     });
 
@@ -100,11 +194,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 newPassword: newPassword
             };
 
-            const response = await fetch(`${API_BASE_URL}/api/Auth/change-password`, {
+            // ====== BẢO MẬT: Dùng authFetch gắn JWT Token thay vì Header X-User-Phone ======
+            const response = await authFetch(`${API_BASE_URL}/api/Auth/change-password`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
-                    "X-User-Phone": userPhone
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(payload)
             });
