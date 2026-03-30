@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FixItNow.Api.Data;
 using FixItNow.Api.Models;
+using FixItNow.Api.DTOs;
 
 namespace FixItNow.Api.Controllers;
 
@@ -16,8 +17,207 @@ public class RepairRequestsController : ControllerBase
         _context = context;
     }
 
-    // ====== US_06 & US_07: Chấp nhận yêu cầu và Xác nhận thợ đầu tiên ======
-    // Endpoint: PUT /api/repairrequests/{id}/accept?workerId={workerId}
+    // ====== US_04: Tạo yêu cầu sửa chữa ======
+    // Hỗ trợ 3 chế độ:
+    //   1) WorkerId != null          → tạo 1 đơn cho 1 thợ cụ thể (cũ)
+    //   2) WorkerIds != null/empty   → tạo N đơn cho N thợ đã chọn (multi-select)
+    //   3) IsBroadcast = true        → tạo 1 đơn broadcast, ai nhận trước được
+    [HttpPost]
+    public async Task<IActionResult> CreateRequest([FromBody] CreateRepairRequestDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        // ===== Chế độ 3: BROADCAST =====
+        if (dto.IsBroadcast)
+        {
+            var request = new RepairRequest
+            {
+                CustomerName = dto.CustomerName,
+                CustomerPhone = dto.CustomerPhone,
+                Address = dto.Address,
+                Category = dto.Category,
+                Description = dto.Description,
+                WorkerId = null,
+                WorkerName = "Đang chờ thợ nhận...",
+                IsBroadcast = true,
+                Status = RequestStatus.Pending,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.RepairRequests.Add(request);
+            await _context.SaveChangesAsync();
+
+            // Gửi thông báo cho TẤT CẢ thợ có hồ sơ
+            var allWorkerUsers = await _context.Users
+                .Where(u => u.Role == UserRole.Worker && u.WorkerProfileId != null)
+                .ToListAsync();
+
+            foreach (var wu in allWorkerUsers)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserPhone = wu.Phone,
+                    Title = "📢 Yêu cầu nhanh mới!",
+                    Message = $"{dto.CustomerName} cần \"{dto.Category}\" tại {dto.Address}. Ai nhận trước được!",
+                    Type = "broadcast_request",
+                    RelatedRequestId = request.Id,
+                    CreatedAt = DateTime.Now
+                });
+            }
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetRequest), new { id = request.Id }, request);
+        }
+
+        // ===== Chế độ 2: MULTI-SELECT (nhiều thợ - Grab style) =====
+        if (dto.WorkerIds != null && dto.WorkerIds.Count > 0)
+        {
+            var targetIdsString = "," + string.Join(",", dto.WorkerIds) + ",";
+
+            var request = new RepairRequest
+            {
+                CustomerName = dto.CustomerName,
+                CustomerPhone = dto.CustomerPhone,
+                Address = dto.Address,
+                Category = dto.Category,
+                Description = dto.Description,
+                WorkerId = null,
+                WorkerName = "Đang chờ thợ nhận...",
+                TargetWorkerIds = targetIdsString,
+                IsBroadcast = false,
+                Status = RequestStatus.Pending,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.RepairRequests.Add(request);
+            await _context.SaveChangesAsync();
+
+            // Gửi thông báo cho từng thợ ưu tiên
+            foreach (var wId in dto.WorkerIds)
+            {
+                var recipient = await _context.Users.FirstOrDefaultAsync(u => u.WorkerProfileId == wId);
+                var workerProfile = await _context.WorkerProfiles.FindAsync(wId);
+                string targetPhone = recipient?.Phone ?? workerProfile?.PhoneNumber ?? "";
+
+                if (!string.IsNullOrEmpty(targetPhone))
+                {
+                    _context.Notifications.Add(new Notification
+                    {
+                        UserPhone = targetPhone,
+                        Title = "📩 Yêu cầu chọn lọc mới",
+                        Message = $"{dto.CustomerName} vừa chọn bạn cho dịch vụ \"{dto.Category}\". Ai nhận trước được!",
+                        Type = "new_request",
+                        RelatedRequestId = request.Id,
+                        CreatedAt = DateTime.Now
+                    });
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Đã gửi yêu cầu đến {dto.WorkerIds.Count} thợ", requests = new[] { request } });
+        }
+
+        // ===== Chế độ 1: SINGLE WORKER (cũ, backward-compatible) =====
+        if (dto.WorkerId == null || dto.WorkerId == 0)
+            return BadRequest(new { message = "Vui lòng chọn thợ hoặc bật chế độ yêu cầu nhanh" });
+
+        var singleWorker = await _context.WorkerProfiles.FindAsync(dto.WorkerId);
+        if (singleWorker == null)
+            return BadRequest(new { message = "Thợ sửa không tồn tại" });
+
+        var singleRequest = new RepairRequest
+        {
+            CustomerName = dto.CustomerName,
+            CustomerPhone = dto.CustomerPhone,
+            Address = dto.Address,
+            Category = dto.Category,
+            Description = dto.Description,
+            WorkerId = dto.WorkerId,
+            WorkerName = singleWorker.NameOrStore,
+            IsBroadcast = false,
+            Status = RequestStatus.Pending,
+            CreatedAt = DateTime.Now
+        };
+
+        _context.RepairRequests.Add(singleRequest);
+        await _context.SaveChangesAsync();
+
+        // US_05: Tạo thông báo cho thợ
+        var singleRecipient = await _context.Users.FirstOrDefaultAsync(u => u.WorkerProfileId == dto.WorkerId);
+        string singleTargetPhone = singleRecipient?.Phone ?? singleWorker.PhoneNumber;
+
+        var notification = new Notification
+        {
+            UserPhone = singleTargetPhone,
+            Title = "📩 Yêu cầu sửa chữa mới",
+            Message = $"{dto.CustomerName} gửi yêu cầu \"{dto.Category}\" tại {dto.Address}",
+            Type = "new_request",
+            RelatedRequestId = singleRequest.Id,
+            CreatedAt = DateTime.Now
+        };
+        _context.Notifications.Add(notification);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetRequest), new { id = singleRequest.Id }, singleRequest);
+    }
+
+    // ====== US_09: Xem danh sách yêu cầu đã tạo (Khách) ======
+    [HttpGet]
+    public async Task<IActionResult> GetRequests([FromQuery] string? phone)
+    {
+        var query = _context.RepairRequests.AsQueryable();
+
+        if (!string.IsNullOrEmpty(phone))
+            query = query.Where(r => r.CustomerPhone == phone);
+
+        var requests = await query
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        return Ok(requests);
+    }
+
+    // ====== US_11: Xem trạng thái yêu cầu ======
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetRequest(int id)
+    {
+        var request = await _context.RepairRequests.FindAsync(id);
+        if (request == null)
+            return NotFound(new { message = "Không tìm thấy yêu cầu" });
+
+        return Ok(request);
+    }
+
+    // ====== US_10: Xem danh sách yêu cầu đã nhận (Thợ) ======
+    // Bao gồm cả đơn Broadcast (WorkerId==null, IsBroadcast==true, Status==Pending)
+    [HttpGet("worker/{workerId}")]
+    public async Task<IActionResult> GetWorkerRequests(int workerId)
+    {
+        var directRequests = await _context.RepairRequests
+            .Where(r => r.WorkerId == workerId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        // Lấy thêm đơn Broadcast và đơn Multi-select (Grab style) đang chờ
+        var stringId = $",{workerId},";
+        var broadcastRequests = await _context.RepairRequests
+            .Where(r => (r.IsBroadcast || (r.TargetWorkerIds != null && r.TargetWorkerIds.Contains(stringId)))
+                        && r.Status == RequestStatus.Pending && r.WorkerId == null)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+
+        var combined = directRequests
+            .Concat(broadcastRequests)
+            .DistinctBy(r => r.Id)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToList();
+
+        return Ok(combined);
+    }
+
+    // ====== US_06: Chấp nhận yêu cầu ======
+    // ====== US_07: Hệ thống xác nhận thợ đầu tiên ======
     [HttpPut("{id}/accept")]
     public async Task<IActionResult> AcceptRequest(int id, [FromQuery] int? workerId)
     {
@@ -25,36 +225,31 @@ public class RepairRequestsController : ControllerBase
         if (request == null)
             return NotFound(new { message = "Không tìm thấy yêu cầu" });
 
-        // 🛑 BƯỚC 1: XỬ LÝ RACE CONDITION (Tính năng thợ đầu tiên)
-        // Nếu ông thợ thứ 2 gọi API này, Status lúc này đã bị ông thứ 1 đổi thành 'Confirmed'
-        // -> Hệ thống chặn lại và văng lỗi.
+        // US_07: Chỉ thợ đầu tiên chấp nhận mới được xác nhận (Race condition safe)
         if (request.Status != RequestStatus.Pending)
             return BadRequest(new { message = "Yêu cầu này đã được xử lý bởi thợ khác" });
 
-        // 🟢 BƯỚC 2: GÁN QUYỀN CHO THỢ THỨ 1
-        // Nếu là đơn Broadcast hoặc yêu cầu Multi-select, tiến hành gán thợ nhận vào đơn sửa chữa
+        // Nếu là đơn Broadcast hoặc Multi-select (Grab-style), gán thợ nhận
         if ((request.IsBroadcast || !string.IsNullOrEmpty(request.TargetWorkerIds)) && workerId.HasValue)
         {
             var worker = await _context.WorkerProfiles.FindAsync(workerId.Value);
             if (worker != null)
             {
-                // Kiểm tra lại xem thợ này có nằm trong tệp thợ được nhắm đến không (Nếu không phải Broadcast)
+                // Kiểm tra quyền đối với đơn Multi-select
                 if (!request.IsBroadcast && !string.IsNullOrEmpty(request.TargetWorkerIds) && !request.TargetWorkerIds.Contains($",{workerId.Value},"))
                 {
                     return BadRequest(new { message = "Bạn không có quyền nhận yêu cầu này" });
                 }
 
-                // Chốt thợ
                 request.WorkerId = workerId.Value;
                 request.WorkerName = worker.NameOrStore;
             }
         }
 
-        // Cập nhật trạng thái Database thành Đã xác nhận (Confirmed)
         request.Status = RequestStatus.Confirmed;
         request.UpdatedAt = DateTime.Now;
 
-        // 🔔 BƯỚC 3: US_08 - GỬI THÔNG BÁO CHO KHÁCH HÀNG
+        // US_08: Thông báo cho khách hàng
         var notification = new Notification
         {
             UserPhone = request.CustomerPhone,
@@ -65,13 +260,10 @@ public class RepairRequestsController : ControllerBase
             CreatedAt = DateTime.Now
         };
         _context.Notifications.Add(notification);
-
-        // Lưu toàn bộ phiên làm việc xuống Database
         await _context.SaveChangesAsync();
 
         return Ok(new { message = "Đã chấp nhận yêu cầu", request });
     }
-
 
     // ====== US_06: Từ chối yêu cầu ======
     [HttpPut("{id}/reject")]
@@ -110,6 +302,7 @@ public class RepairRequestsController : ControllerBase
                     _context.Notifications.Add(notif);
                 }
             }
+<<<<<<< HEAD
             // Với Broadcast thực sự (không có danh sách), lưu lại ID thợ để ẩn đơn
             else if (request.IsBroadcast && workerId.HasValue)
             {
@@ -122,8 +315,12 @@ public class RepairRequestsController : ControllerBase
                     request.RejectedWorkerIds += $"{workerId.Value},";
                 }
             }
+=======
+            // Với Broadcast thực sự (không có danh sách), không làm gì thêm ở server
+            // Client sẽ tự ẩn đi khỏi giao diện của thợ đó.
+>>>>>>> origin/feature/GK05-42-Code-FE-xem-trạng-thái-yêu-cầu
         }
-        else
+        else 
         {
             // Đơn 1-kèm-1 (Single worker)
             request.Status = RequestStatus.Cancelled;
@@ -247,4 +444,3 @@ public class RepairRequestsController : ControllerBase
     }
 
 }
-
