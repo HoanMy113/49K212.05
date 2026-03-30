@@ -28,6 +28,9 @@ public class RepairRequest
 	// Lưu danh sách ID thợ mục tiêu cho chế độ Multi-select dạng chuỗi: ",1,2,3,"
 	public string? TargetWorkerIds { get; set; }
 
+	// DANH SÁCH THỢ TỪ CHỐI ĐƠN BROADCAST: ",1,2,3," (Mới thêm)
+	public string? RejectedWorkerIds { get; set; }
+
 	// Broadcast: gửi cho tất cả thợ trong khu vực
 	public bool IsBroadcast { get; set; } = false;
 
@@ -36,20 +39,4 @@ public class RepairRequest
 
 	public DateTime CreatedAt { get; set; } = DateTime.Now;
 	public DateTime? UpdatedAt { get; set; }
-
-	// ... (Thông tin khách hàng và thông tin yêu cầu) ...
-
-    public int? WorkerId { get; set; } // ID người thợ chốt cuối cùng
-    public string WorkerName { get; set; } = string.Empty; 
-
-    // CHẾ ĐỘ MULTI-SELECT (Người dùng tuỳ chọn nhiều thợ): ",1,2,3,"
-    public string? TargetWorkerIds { get; set; }
-
-    // DANH SÁCH THỢ TỪ CHỐI ĐƠN BROADCAST: ",1,2,3," (Mới thêm)
-    public string? RejectedWorkerIds { get; set; }
-
-    // CHẾ ĐỘ BROADCAST (Gửi tất cả thợ): Chọn ai nhanh nhất
-    public bool IsBroadcast { get; set; } = false;
-
-    public RequestStatus Status { get; set; } = RequestStatus.Pending;
 }

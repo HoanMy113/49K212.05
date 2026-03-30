@@ -1,0 +1,173 @@
+﻿branch 'develop' set up to track 'origin/develop'.
+Already up to date.
+========================================
+Testing merge for: origin/GK05-26-Code-FE-tìm-kiếm-và-lọc
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+Removing check_merges.ps1
+========================================
+Testing merge for: origin/GK05-33-Code-FE-tạo-và-cập-nhật-hồ-sơ
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/GK05-52-BE-Chấp-nhận-Từ-chối-yêu-cầu
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/GK05-56-BE-thong-bao-nguoi-dung
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/GK05-63-BE-danh-gia-tho-sua
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-10-US_09-Xem-danh-sách-các-yêu-cầu-đã-tạo
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-27-Code-BE-tìm-kiếm-và-lọc
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-29-Code-FE-Xem-ho-so
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-30-Code-BE-Xem-ho-so
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-32-Code-FE-BE-tạo-và-cập-nhật-hồ-sơ
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-37-Code-FE-tạo-yêu-cầu-sửa-chữa
+RESULT: CONFLICT
+Conflicting files:
+  - view/js/config.js
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-38-Code-BE-tao-yeu-cau-sua-chua
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-41-Code-BE-xem-danh-sach-cac-yeu-cau-da-tao
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-42-Code-FE-xem-trạng-thái-yêu-cầu
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/NotificationsController.cs
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+  - view/js/review.js
+  - view/js/worker-requests.js
+  - view/worker-requests.html
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-43-Code-BE-Xem-TT-yeu-cau
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-44-Code-fE-huy-yeu-cau
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-45-Code-Be-hủy-yêu-cầu
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-49-Code-FE-Thợ-Nhận-Thông-Báo
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/NotificationsController.cs
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+  - view/js/review.js
+  - view/js/worker-requests.js
+  - view/worker-requests.html
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-50-Code-BE-tho-nhan-yeu-cau
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-51-FE-Chấp-nhận-Từ-chối-yêu-cầu
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-53-Code-FE-Hệ-thống-xác-nhận-thợ-đầu-tiên
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/NotificationsController.cs
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+  - view/js/review.js
+  - view/js/worker-requests.js
+  - view/worker-requests.html
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-55-FE-Thông-báo-cho-người-dùng
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-57-FE-Xem-danh-sách-các-yêu-cầu-đã-nhận
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/NotificationsController.cs
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+  - view/js/review.js
+  - view/js/worker-requests.js
+  - view/worker-requests.html
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-58-BE-Xem-danh-sach-cac-yeu-cau-da-nhan
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-60-Cập-nhật-trạng-thái-công-việc
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/NotificationsController.cs
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+  - view/js/review.js
+  - view/js/worker-requests.js
+  - view/worker-requests.html
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-61-Code-BE-cap-nhat-trang-thai-cong-viec
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-62-FE-Đánh-giá-thợ-sửa
+RESULT: SUCCESS (No conflicts)
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua
+========================================
+Testing merge for: origin/feature/GK05-64-FE-Xem-đánh-giá-của-khách
+RESULT: CONFLICT
+Conflicting files:
+  - FixItNow.Backend/FixItNow.Api/Controllers/NotificationsController.cs
+  - FixItNow.Backend/FixItNow.Api/Controllers/RepairRequestController.cs
+  - FixItNow.Backend/FixItNow.Api/Models/RepairRequest.cs
+  - view/js/review.js
+  - view/js/worker-requests.js
+  - view/worker-requests.html
+HEAD is now at 1458dfe Merge pull request #11 from HoanMy113/GK05-63-BE-danh-gia-tho-sua

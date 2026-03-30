@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo | FixItNow PRO</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Nunito', sans-serif; }
+        
+        .dashboard-wrapper { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 250px;
+            background: #fff;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+        .sidebar .brand {
+            font-size: 24px;
+            font-weight: 800;
+            color: #4e7d63;
+            text-align: center;
+            margin-bottom: 40px;
+            text-decoration: none;
+        }
+        .sidebar-menu { list-style: none; padding: 0; margin: 0; flex-grow: 1; }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background: #eaf3ed;
+            color: #4e7d63;
+        }
+        .sidebar-link i { font-size: 18px; width: 20px; text-align: center; }
+        .logout-btn { color: #dc3545; margin-top: auto; }
+        .logout-btn:hover { background: #fdf7f7; color: #dc3545; }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 250px;
+            padding: 30px 40px;
+        }
+
+        /* Notification Cards */
+        .notif-card {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border-left: 5px solid #4e7d63;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        .notif-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        .notif-card.unread {
+            background: linear-gradient(135deg, #f0f7f3 0%, #e8f5ee 100%);
+            border-left-color: #f39c12;
+        }
+        .notif-card.unread::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(243,156,18,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <a href="index.html" class="brand">FixItNow <span style="color:#f39c12; font-size:16px;">PRO</span></a>
+            
+            <ul class="sidebar-menu">
+                <li><a href="worker-dashboard.html" class="sidebar-link"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
+                <li><a href="profile.html" class="sidebar-link"><i class="fa-solid fa-user-gear"></i> Tài khoản</a></li>
+                <li><a href="worker-notifications.html" class="sidebar-link active"><i class="fa-solid fa-bell"></i> Thông báo</a></li>
+                <li><a href="worker-feedback.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Đánh giá</a></li>
+            </ul>
+
+            <a href="#" id="logoutBtn" class="sidebar-link logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <div style="margin-bottom: 30px;">
+                <h2 style="font-weight: 800; color: #333; margin: 0;"><i class="fa-solid fa-bell" style="color: #f39c12;"></i> Thông báo</h2>
+                <p style="color: #888; margin-top: 5px;">Cập nhật mới nhất về các yêu cầu sửa chữa gửi đến bạn</p>
+            </div>
+
+            <div id="notifList">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <h5 style="color:#2c3e50; font-weight:700;">Đang tải thông báo...</h5>
+                </div>
+            </div>
+            
+            <!-- PAGINATION -->
+            <nav aria-label="Page navigation" id="paginationNav" class="mt-4" style="display: none;">
+                <ul class="pagination justify-content-center" id="paginationList">
+                </ul>
+            </nav>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+            const userPhone = sessionStorage.getItem('userPhone');
+            const userRole = sessionStorage.getItem('userRole');
+
+            if (isLoggedIn !== 'true' || userRole !== 'Repairman') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Logout
+            document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.clear();
+                window.location.href = 'login.html';
+            });
+
+            const notifList = document.getElementById('notifList');
+            const paginationNav = document.getElementById('paginationNav');
+            const paginationList = document.getElementById('paginationList');
+
+            let allNotifications = [];
+            let currentPage = 1;
+            const itemsPerPage = 5;
+
+            async function fetchNotifications() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/notifications/user/${userPhone}`);
+                    if (!response.ok) throw new Error('Không thể tải thông báo');
+                    allNotifications = await response.json();
+                    renderNotifications();
+                } catch (error) {
+                    console.error(error);
+                    notifList.innerHTML = '<div class="text-center py-5 text-danger"><i class="fas fa-exclamation-triangle fa-2x mb-3"></i><p>Lỗi tải thông báo.</p></div>';
+                }
+            }
+
+            function renderNotifications() {
+                if (!allNotifications || allNotifications.length === 0) {
+                    notifList.innerHTML = `
+                        <div class="text-center py-5" style="background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                            <i class="fas fa-bell-slash fa-3x mb-3" style="color: #ddd;"></i>
+                            <p style="color: #888; font-weight: 600;">Bạn không có thông báo nào.</p>
+                        </div>
+                    `;
+                    if (paginationNav) paginationNav.style.display = 'none';
+                    return;
+                }
+
+                // Pagination Logic
+                const totalPages = Math.ceil(allNotifications.length / itemsPerPage);
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const currentItems = allNotifications.slice(startIndex, endIndex);
+
+                notifList.innerHTML = currentItems.map(n => `
+                    <div class="notif-card ${n.isRead ? '' : 'unread'}" onclick="markAsRead(${n.id})">
+                        <h6 style="font-weight: ${n.isRead ? '600' : '800'}; color: ${n.isRead ? '#888' : '#2c3e50'}; font-size: 16px; margin-bottom: 6px;">${n.title}</h6>
+                        <p style="color: #666; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">${n.message}</p>
+                        <div style="font-size: 12px; color: #aaa; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                            <i class="fa-regular fa-clock" style="font-size: 11px;"></i>
+                            ${new Date(n.createdAt).toLocaleString('vi-VN')}
+                        </div>
+                    </div>
+                `).join('');
+
+                renderPagination(totalPages);
+            }
+
+            function renderPagination(totalPages) {
+                if (!paginationNav || !paginationList) return;
+
+                if (totalPages <= 1) {
+                    paginationNav.style.display = 'none';
+                    return;
+                }
+
+                paginationNav.style.display = 'block';
+                let html = '';
+
+                html += `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link shadow-sm" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                `;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    html += `
+                        <li class="page-item ${currentPage === i ? 'active' : ''}">
+                            <a class="page-link shadow-sm" href="#" data-page="${i}">${i}</a>
+                        </li>
+                    `;
+                }
+
+                html += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link shadow-sm" href="#" data-page="${currentPage + 1}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                `;
+
+                paginationList.innerHTML = html;
+
+                paginationList.querySelectorAll('.page-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = parseInt(e.currentTarget.dataset.page);
+                        if (!isNaN(page) && page >= 1 && page <= totalPages && page !== currentPage) {
+                            currentPage = page;
+                            renderNotifications();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+
+            window.markAsRead = async (id) => {
+                try {
+                    await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, { method: 'PATCH' });
+                    fetchNotifications();
+                } catch (error) {
+                    console.error(error);
+                }
+            };
+
+            fetchNotifications();
+        });
+    </script>
+</body>
+</html>

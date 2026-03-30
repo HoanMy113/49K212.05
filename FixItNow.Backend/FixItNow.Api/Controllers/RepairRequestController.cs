@@ -302,6 +302,7 @@ public class RepairRequestsController : ControllerBase
                     _context.Notifications.Add(notif);
                 }
             }
+<<<<<<< HEAD
             // Với Broadcast thực sự (không có danh sách), lưu lại ID thợ để ẩn đơn
             else if (request.IsBroadcast && workerId.HasValue)
             {
@@ -314,6 +315,10 @@ public class RepairRequestsController : ControllerBase
                     request.RejectedWorkerIds += $"{workerId.Value},";
                 }
             }
+=======
+            // Với Broadcast thực sự (không có danh sách), không làm gì thêm ở server
+            // Client sẽ tự ẩn đi khỏi giao diện của thợ đó.
+>>>>>>> origin/feature/GK05-42-Code-FE-xem-trạng-thái-yêu-cầu
         }
         else 
         {

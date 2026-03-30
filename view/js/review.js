@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Phân tích tham số truyền trên Thanh Địa Chỉ (URL Params)
-    // Ví dụ: review.html?requestId=123&workerId=45
     const urlParams = new URLSearchParams(window.location.search);
     const requestId = urlParams.get('requestId');
     const workerId = urlParams.get('workerId');
@@ -27,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. HIỆU ỨNG DI CHUỘT (Hover) QUA NHỮNG NGÔI SAO
     stars.forEach(star => {
-        // Khi Cick: Chốt số Sao hiện tại
+        // Khi Click: Chốt số Sao hiện tại
         star.addEventListener('click', () => {
             currentRating = parseInt(star.dataset.rating);
             updateStars();
@@ -73,12 +72,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Kiểm tra khách đã chọn sao chưa?
         if (currentRating === 0) {
-            alert('Vui lòng chọn số sao đánh giá.');
+            if (typeof showModal === 'function') showModal('Vui lòng chọn số sao đánh giá.', 'error');
+            else alert('Vui lòng chọn số sao đánh giá.');
             return;
         }
 
         const comment = document.getElementById('comment').value; // Ý kiến của khách
-        const customerName = sessionStorage.getItem('fullName') || 'Khách hàng';
+        const customerName = sessionStorage.getItem('userName') || sessionStorage.getItem('fullName') || 'Khách hàng';
 
         const payload = {
             requestId: parseInt(requestId), // Id đơn
@@ -98,18 +98,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 // Thành công: Thông báo và Điều hướng khách trở về Bảng điều khiển Lịch sử
-                alert('Cảm ơn bạn đã phản hồi chất lượng. Ý kiến của bạn đã được ghi nhận!');
-                window.location.href = 'my-requests.html';
-                
+                if (typeof showModal === 'function') {
+                    showModal('Cảm ơn bạn đã phản hồi chất lượng. Ý kiến của bạn đã được ghi nhận!', 'success', {
+                        autoClose: 2000,
+                        onClose: () => window.location.href = 'my-requests.html'
+                    });
+                } else {
+                    alert('Cảm ơn bạn đã đánh giá!');
+                    window.location.href = 'my-requests.html';
+                }
             } else {
                 // Báo lỗi (Khách đã Review đơn này rồi thì Server trả chữ về đây)
                 const data = await response.json();
                 const msg = data.message || 'Gửi đánh giá thất bại.';
-                alert(msg);
+                if (typeof showModal === 'function') showModal(msg, 'error');
+                else alert(msg);
             }
         } catch (error) {
             console.error(error);
-            alert('Lỗi kết nối mạng hoặc máy chủ tắt.');
+            if (typeof showModal === 'function') showModal('Lỗi kết nối máy chủ.', 'error');
+            else alert('Lỗi kết nối mạng hoặc máy chủ tắt.');
         }
     });
 });
