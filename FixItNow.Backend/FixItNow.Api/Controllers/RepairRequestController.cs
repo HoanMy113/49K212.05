@@ -302,8 +302,18 @@ public class RepairRequestsController : ControllerBase
                     _context.Notifications.Add(notif);
                 }
             }
-            // Với Broadcast thực sự (không có danh sách), không làm gì thêm ở server
-            // Client sẽ tự ẩn đi khỏi giao diện của thợ đó.
+            // Với Broadcast thực sự (không có danh sách), lưu lại ID thợ để ẩn đơn
+            else if (request.IsBroadcast && workerId.HasValue)
+            {
+                if (string.IsNullOrEmpty(request.RejectedWorkerIds))
+                {
+                    request.RejectedWorkerIds = $",{workerId.Value},";
+                }
+                else if (!request.RejectedWorkerIds.Contains($",{workerId.Value},"))
+                {
+                    request.RejectedWorkerIds += $"{workerId.Value},";
+                }
+            }
         }
         else 
         {
@@ -428,81 +438,4 @@ public class RepairRequestsController : ControllerBase
         return Ok(new { message = "Đã cập nhật trạng thái", request });
     }
 
-    [HttpPut("{id}/accept")]
-public async Task<IActionResult> AcceptRequest(int id, [FromQuery] int? workerId)
-{
-    var request = await _context.RepairRequests.FindAsync(id);
-    if (request == null) return NotFound(new { message = "Không tìm thấy yêu cầu" });
-
-    // Chỉ thợ đầu tiên chấp nhận mới được duyệt (Xử lý Race Condition cho đơn Broadcast/Multi-select)
-    if (request.Status != RequestStatus.Pending || request.WorkerId != null)
-    {
-        return BadRequest(new { message = "Yêu cầu này đã được thợ khác nhận hoặc không còn hợp lệ" });
-    }
-
-    var worker = workerId.HasValue ? await _context.WorkerProfiles.FindAsync(workerId.Value) : null;
-
-    request.Status = RequestStatus.Confirmed; // Chuyển trạng thái Đã Xác Nhận
-    request.WorkerId = workerId;              // Gán ID thợ
-    request.WorkerName = worker?.NameOrStore ?? "Thợ hệ thống";
-    request.UpdatedAt = DateTime.Now;
-
-    // ... (Code lưu Notification thông báo cho Khách hàng rằng yêu cầu đã được nhận) ...
-
-    await _context.SaveChangesAsync();
-    return Ok(new { message = "Đã chấp nhận yêu cầu", request });
-}
-
-[HttpPut("{id}/reject")]
-public async Task<IActionResult> RejectRequest(int id, [FromQuery] int? workerId)
-{
-    var request = await _context.RepairRequests.FindAsync(id);
-    if (request == null) return NotFound(new { message = "Không tìm thấy yêu cầu" });
-
-    if (request.Status != RequestStatus.Pending)
-        return BadRequest(new { message = "Chỉ có thể từ chối yêu cầu đang chờ" });
-
-    // Logic xử lý từ chối cho Đơn Multi-select hoặc Broadcast
-    if (request.IsBroadcast || request.TargetWorkerIds != null)
-    {
-        if (request.TargetWorkerIds != null && workerId.HasValue)
-        {
-            // Trượt thợ từ chối ra khỏi danh sách TargetWorkerIds
-            request.TargetWorkerIds = request.TargetWorkerIds.Replace($",{workerId},", ",");
-            if (request.TargetWorkerIds == ",")
-            {
-                // Nếu không còn thợ nào trong danh sách, huỷ yêu cầu và báo cho khách
-                request.Status = RequestStatus.Cancelled;
-                request.UpdatedAt = DateTime.Now;
-                // ... (Code tạo Notification thông báo Huỷ đơn) ...
-            }
-        }
-        else 
-        {
-            // ĐỐI VỚI ĐƠN BROADCAST (Nhiều thợ cùng thấy)
-            // Lưu lại ID của thợ đã từ chối để lần sau query không lấy lại đơn đó nữa
-            if (request.IsBroadcast && workerId.HasValue)
-            {
-                if (string.IsNullOrEmpty(request.RejectedWorkerIds))
-                {
-                    request.RejectedWorkerIds = $",{workerId.Value},";
-                }
-                else if (!request.RejectedWorkerIds.Contains($",{workerId.Value},"))
-                {
-                    request.RejectedWorkerIds += $"{workerId.Value},";
-                }
-            }
-        }
-    }
-    // Logic xử lý cho đơn gọi 1 thợ trực tiếp
-    else
-    {
-        request.Status = RequestStatus.Cancelled;
-        request.UpdatedAt = DateTime.Now;
-        // ... (Code tạo Notification thông báo cho Khách) ...
-    }
-
-    await _context.SaveChangesAsync();
-    return Ok(new { message = "Đã từ chối yêu cầu", request });
-}
 }
