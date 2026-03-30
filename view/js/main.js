@@ -144,15 +144,19 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // Global: Thêm nút "Quay lại" tự động cho các trang con
     const path = window.location.pathname;
-    const isSubPage = !path.endsWith("index.html") && !path.endsWith("/") && !path.includes("login.html") && !path.includes("register.html");
+    const isSubPage = !path.endsWith("index.html") && !path.endsWith("/") && !path.includes("login.html") && !path.includes("register.html") && !path.includes("create-request.html");
     if (isSubPage) {
         const mainContainer = document.querySelector("main.container");
         if (mainContainer) {
-            const backBtn = document.createElement("button");
-            backBtn.innerHTML = "← Quay lại";
-            backBtn.className = "btn-back-global";
-            backBtn.onclick = () => window.history.back();
-            mainContainer.insertBefore(backBtn, mainContainer.firstChild);
+            // Only inject if no custom back button exists (searching for common classes or links to index)
+            const hasExistingBack = mainContainer.querySelector('.btn-back-global, .back-btn, a[href="index.html"]');
+            if (!hasExistingBack) {
+                const backBtn = document.createElement("button");
+                backBtn.innerHTML = "← Quay lại";
+                backBtn.className = "btn-back-global";
+                backBtn.onclick = () => window.history.back();
+                mainContainer.insertBefore(backBtn, mainContainer.firstChild);
+            }
         }
     }
 
@@ -184,6 +188,13 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         if (username) username.textContent = sessionStorage.getItem("fullName") || "Người dùng";
+        
+        // Cập nhật ảnh đại diện nếu có trong session
+        const savedAvatar = sessionStorage.getItem("userAvatar");
+        if (savedAvatar) {
+            const avatarImg = document.querySelector("#userAvatar img");
+            if (avatarImg) avatarImg.src = savedAvatar;
+        }
         
         // Hiện menu thợ nếu role=Worker
         if (sessionStorage.getItem("role") === "Worker") {
@@ -699,20 +710,25 @@ document.addEventListener("DOMContentLoaded", function () {
             div.className = "col-md-6 col-lg-4";
             div.innerHTML = `
                 <div class="worker-card-premium" style="position:relative; background:white; border-radius:14px; padding:16px; box-shadow:0 4px 15px rgba(0,0,0,0.04); transition:transform 0.2s; height:100%; display:flex; flex-direction:column;">
-                    <input type="checkbox" class="worker-select-cb" data-worker-id="${w.id}" style="position:absolute; top:20px; right:20px; z-index:5; width:20px; height:20px; cursor:pointer;">
+                    <input type="checkbox" class="worker-select-cb" data-worker-id="${w.id}" style="position:absolute; top:15px; right:15px; z-index:5; width:20px; height:20px; cursor:pointer;">
                     
                     <div class="worker-card-body" style="flex-grow:1;">
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <h5 class="worker-name m-0" style="font-weight:800; color:#2c3e50; font-size:16px; max-width:80%;">${w.nameOrStore || "---"}</h5>
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="worker-avatar-container" style="width:56px; height:56px; border-radius:50%; overflow:hidden; border:2px solid #eaf3ed; flex-shrink:0;">
+                                <img src="${w.avatarUrl ? (w.avatarUrl.startsWith('http') ? w.avatarUrl : API_BASE_URL + w.avatarUrl) : 'https://cdn-icons-png.flaticon.com/512/147/147144.png'}" 
+                                     alt="Avatar" style="width:100%; height:100%; object-fit:cover;">
+                            </div>
+                            <div style="flex-grow:1; min-width:0;">
+                                <h5 class="worker-name m-0" style="font-weight:800; color:#2c3e50; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${w.nameOrStore || "---"}</h5>
+                                <div class="worker-rating-pill" style="display:inline-block; color:#f39c12; font-weight:700; font-size:13px;">
+                                    <i class="fa-solid fa-star"></i> ${w.displayRating.toFixed(1)}
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="worker-rating-pill mb-2" style="display:inline-block; background:#fff8e1; color:#f39c12; padding:3px 10px; border-radius:30px; font-weight:700; font-size:13px;">
-                            <i class="fa-solid fa-star"></i> ${w.displayRating.toFixed(1)}
-                        </div>
-                        
-                        <div class="worker-location-text mb-2" style="color:#666; font-size:13px; display:flex; gap:8px;">
+                        <div class="worker-location-text mb-2" style="color:#666; font-size:13px; display:flex; gap:8px; line-height:1.4;">
                             <i class="fa-solid fa-location-dot mt-1" style="color:#e74c3c;"></i> 
-                            <span>${w.address || w.location || "---"}</span>
+                            <span style="overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${w.address || w.location || "---"}</span>
                         </div>
                         
                         <div class="worker-service-tags" style="display:flex; flex-wrap:wrap; gap:6px;">
@@ -724,8 +740,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                     try { sList = JSON.parse(w.services); } catch(e) { sList = [w.services]; }
                                 }
                                 const top3 = sList.slice(0, 3);
-                                let html = top3.map(s => `<span style="background:#eaf3ed; color:#4e7d63; padding:4px 10px; border-radius:8px; font-size:12px; font-weight:700;">${s}</span>`).join("");
-                                if (sList.length > 3) html += `<span style="background:#f0f0f0; color:#888; padding:4px 8px; border-radius:8px; font-size:12px; font-weight:700;">+${sList.length - 3}</span>`;
+                                let html = top3.map(s => `<span style="background:#eaf3ed; color:#4e7d63; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700;">${s}</span>`).join("");
+                                if (sList.length > 3) html += `<span style="background:#f0f0f0; color:#888; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700;">+${sList.length - 3}</span>`;
                                 return html;
                             })()}
                         </div>
