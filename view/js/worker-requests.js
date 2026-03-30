@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // ====== HOÀN THÀNH ======
+    // ====== US_12 & US_14: CẬP NHẬT TRẠNG THÁI & HOÀN THÀNH ======
     async function completeRequest(requestId) {
         let confirmed = false;
         if (typeof showConfirmModal === 'function') {
