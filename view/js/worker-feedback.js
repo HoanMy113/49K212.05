@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     /* ================= SESSION CHECK ================= */
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === "true";
     const userRole = sessionStorage.getItem('userRole');
-    const userName = sessionStorage.getItem('fullName') || sessionStorage.getItem('userName');
+    const userName = sessionStorage.getItem('fullName') || 'Người dùng';
     const workerProfileId = sessionStorage.getItem('workerProfileId');
 
     if (!isLoggedIn || userRole !== 'Repairman') {
