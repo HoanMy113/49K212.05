@@ -11,9 +11,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure InMemory Database
+// Configure SQL Server Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseInMemoryDatabase("FixItNowDb"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configure DI Services
 builder.Services.AddScoped<IProfileService, ProfileService>();

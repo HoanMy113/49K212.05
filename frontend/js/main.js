@@ -209,9 +209,98 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    searchBtn?.addEventListener("click", function () {
+    searchBtn?.addEventListener("click", async function () {
         closeLocationPopup();
         closeCategoryDropdown();
+
+        const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+        if (!isLoggedIn) {
+            sessionStorage.setItem("searchRedirectMsg", "Vui lòng đăng nhập để sử dụng chức năng tìm thợ.");
+            alert("Vui lòng đăng nhập để sử dụng chức năng tìm thợ.");
+            return;
+        }
+
+        // Gather selected categories
+        const selectedCategories = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) selectedCategories.push(cb.parentElement.textContent.trim());
+        });
+
+        // Gather location
+        const locationStr = (selectedProvince && selectedDistrict)
+            ? selectedProvince + ", " + selectedDistrict
+            : selectedProvince || selectedDistrict || "";
+
+        // Build query params
+        const params = new URLSearchParams();
+        if (selectedCategories.length > 0) params.append("category", selectedCategories.join(","));
+        if (locationStr)              params.append("location", locationStr);
+
+        const API_URL = "http://localhost:5111";
+        const url = `${API_URL}/api/profiles/search?${params.toString()}`;
+
+        // Show loading
+        let resultsSection = document.getElementById("searchResults");
+        if (!resultsSection) {
+            resultsSection = document.createElement("section");
+            resultsSection.id = "searchResults";
+            resultsSection.className = "search-results container";
+            document.querySelector("main").appendChild(resultsSection);
+        }
+        resultsSection.innerHTML = "<p class='loading-msg'>Đang tìm kiếm...</p>";
+
+        try {
+            const res = await fetch(url);
+            const workers = await res.json();
+
+            if (!workers || workers.length === 0) {
+                resultsSection.innerHTML = `<p class='no-result-msg'>Chưa có dữ liệu thợ sửa chữa phù hợp.</p>`;
+                return;
+            }
+
+            resultsSection.innerHTML = `<h2 class='results-title'>Danh sách thợ phù hợp (${workers.length} kết quả)</h2>`;
+
+            const grid = document.createElement("div");
+            grid.className = "results-grid";
+
+            workers.forEach(worker => {
+                const stars = Math.round(worker.rating || 0);
+                const starHTML = "★".repeat(stars) + "☆".repeat(5 - stars);
+                const services = Array.isArray(worker.services) ? worker.services.join(", ") : (worker.services || "");
+
+                const card = document.createElement("div");
+                card.className = "worker-card";
+                card.innerHTML = `
+                    <div class="worker-card-inner">
+                        <div class="worker-avatar">👷</div>
+                        <div class="worker-info">
+                            <h3 class="worker-name">${worker.nameOrStore || "Không tên"}</h3>
+                            <span class="worker-rating" title="Đánh giá">${starHTML} <small>${(worker.rating || 0).toFixed(1)}</small></span>
+                            <p class="worker-location">📍 ${worker.location || "Không rõ địa điểm"}</p>
+                            <p class="worker-services">🔧 ${services || "Chưa cập nhật"}</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            resultsSection.appendChild(grid);
+        } catch (err) {
+            resultsSection.innerHTML = `<p class='no-result-msg'>Không thể kết nối đến máy chủ. Vui lòng thử lại sau.</p>`;
+            console.error("Search API error:", err);
+        }
+    });
+
+    // Bỏ chọn tất cả (E1.6)
+    document.getElementById("clearAll")?.addEventListener("click", function () {
+        checkboxes.forEach(cb => cb.checked = false);
+        if (selectAll) selectAll.checked = false;
+        selectedProvince = "";
+        selectedDistrict = "";
+        if (locationText) locationText.innerText = "Địa điểm";
+        if (categoryText) categoryText.innerText = "Danh mục sửa chữa";
+        if (districtColumn) districtColumn.innerHTML = "";
+        $$(".province-item").forEach(p => p.classList.remove("active"));
     });
 
     /* AUTH */
