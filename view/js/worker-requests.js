@@ -37,7 +37,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             applyFilter();
         } catch (error) {
             console.error(error);
-            requestsList.innerHTML = '<div class="empty-icon"><i class="fas fa-exclamation-triangle" style="color:#e74c3c;"></i></div><div class="empty-text" style="color:#e74c3c;">Có lỗi xảy ra khi tải dữ liệu.</div>';
+            let errorMessage = "Có lỗi xảy ra khi tải dữ liệu.";
+            if (error.name === 'TypeError' || error.message.includes('Failed to fetch')) {
+                errorMessage = "Lỗi kết nối máy chủ. Hãy đảm bảo Backend đang chạy.";
+            }
+            requestsList.innerHTML = `<div class="empty-icon"><i class="fas fa-plug-circle-xmark" style="color:#e74c3c;"></i></div>
+                                     <div class="empty-text" style="color:#e74c3c;">${errorMessage}</div>
+                                     <button class="btn btn-sm btn-outline-danger mt-2" onclick="location.reload()">Thử lại</button>`;
         }
     }
 

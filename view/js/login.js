@@ -47,7 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error(error);
-            alert('Lỗi kết nối máy chủ.');
+            loginError.textContent = 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại server backend.';
+            loginError.style.display = 'block';
         }
     });
 });

@@ -81,10 +81,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         } catch (error) {
             console.error(error);
+            let errorMessage = "Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.";
+            let iconClass = "fas fa-exclamation-triangle";
+
+            // Determine if it's a connection error
+            if (error.name === 'TypeError' || error.message.includes('Failed to fetch')) {
+                errorMessage = "Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại server backend.";
+                iconClass = "fas fa-plug-circle-xmark";
+            }
+
             if (feedbackList) {
                 feedbackList.innerHTML = `<div class="empty-state">
-                    <i class="fas fa-exclamation-triangle text-danger fa-3x mb-3"></i>
-                    <p>Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</p>
+                    <i class="${iconClass} text-danger fa-3x mb-3"></i>
+                    <p>${errorMessage}</p>
+                    <button class="btn btn-outline-success mt-3" onclick="location.reload()">
+                        <i class="fas fa-sync-alt me-1"></i> Thử lại
+                    </button>
                 </div>`;
             }
         }
