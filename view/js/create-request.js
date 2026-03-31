@@ -335,4 +335,55 @@ document.addEventListener("DOMContentLoaded", async function () {
             submitBtn.textContent = "Gửi yêu cầu";
         }
     });
+    document.addEventListener("DOMContentLoaded", async function () {
+        // 1. Parse Query String từ URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryFromUrl = urlParams.get('category'); // VD: "Điện"
+
+        // 2. Điền tự động vào Select Box của Category
+        const categorySelect = document.getElementById("category");
+        if (categoryFromUrl && categorySelect) {
+            // Lặp qua các option, nếu khớp thì selected
+            for (let i = 0; i < categorySelect.options.length; i++) {
+                if (categorySelect.options[i].value === categoryFromUrl) {
+                    categorySelect.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // 3. Xử lý Gửi Form (Lúc bấm nút Submit)
+        document.getElementById("requestForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            // Lấy chế độ người dùng chọn. Khách từ trang chủ qua thường để mặc định là "broadcast" (Yêu cầu nhanh)
+            const uiMode = document.getElementById("requestMode").value; // "broadcast" | "single" | "multi"
+
+            const payload = {
+                customerName: document.getElementById("customerName").value,
+                customerPhone: sessionStorage.getItem("userPhone"),
+                address: document.getElementById("address").value,
+                category: categorySelect.value,
+                description: document.getElementById("description").value,
+                // Nếu là broadcast, bật cờ IsBroadcast = true
+                isBroadcast: (uiMode === "broadcast") ? true : false
+            };
+
+            try {
+                // Gửi lên Backend tạo đơn mới (Có thể có authFetch)
+                const res = await fetch(`${API_BASE_URL}/api/repairrequests`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error("Chưa thể tạo yêu cầu");
+
+                // Xử lý UI thành công...
+                document.getElementById("successBox").style.display = "block";
+            } catch(err) {
+                alert(err.message);
+            }
+        });
+    });
 });
