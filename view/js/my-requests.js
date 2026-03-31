@@ -276,4 +276,44 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     fetchMyRequests();
+    // 1. Gọi API lấy TOÀN BỘ danh sách yêu cầu của người dùng đang đăng nhập
+    async function fetchMyRequests() {
+        try {
+            const userPhone = sessionStorage.getItem('userPhone');
+            const response = await fetch(`${API_BASE_URL}/api/RepairRequests?phone=${userPhone}`);
+            if (!response.ok) throw new Error('Không thể tải yêu cầu');
+            
+            const data = await response.json();
+            allRequests = data; // Lưu dữ liệu gốc
+            
+            updateStats();
+            applyFilter(); // Tự động chạy hàm lọc
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 2. Chứa cấu hình bộ lọc trạng thái (Status 3 = Đã hủy)
+    const filterMap = {
+        'pending':   { statuses: [0], label: '— Đang chờ' },
+        'confirmed': { statuses: [1], label: '— Đã xác nhận' },
+        'completed': { statuses: [2], label: '— Hoàn thành' },
+        'cancelled': { statuses: [3], label: '— Đã huỷ' }
+    };
+
+    // 3. Hàm xử lý LỌC danh sách khi người dùng bấm vào Tab "Đã hủy"
+    function applyFilter() {
+        let filtered;
+
+        if (activeFilter && filterMap[activeFilter]) {
+            const { statuses, label } = filterMap[activeFilter];
+            // JS filter() sẽ lôi ra các đơn "Đã hủy" nếu activeFilter đang là 'cancelled' 
+            filtered = allRequests.filter(r => statuses.includes(r.status));
+        } else {
+            filtered = allRequests;
+        }
+        
+        // 4. In danh sách đã lọc ra thẻ HTML
+        renderRequests(filtered); 
+    }
 });
