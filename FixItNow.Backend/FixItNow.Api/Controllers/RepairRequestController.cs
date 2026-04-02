@@ -438,57 +438,7 @@ public class RepairRequestsController : ControllerBase
         return Ok(new { message = "Đã cập nhật trạng thái", request });
     }
 
-    [HttpPost]
-public async Task<IActionResult> CreateRequest([FromBody] CreateRepairRequestDto dto)
-{
-    if (!ModelState.IsValid)
-        return BadRequest(ModelState);
 
-    // ===== Tính năng: TẠO ĐƠN BROADCAST (TÌM THỢ NHANH TỪ TRANG CHỦ) =====
-    if (dto.IsBroadcast)
-    {
-        var request = new RepairRequest
-        {
-            CustomerName = dto.CustomerName,
-            CustomerPhone = dto.CustomerPhone,
-            Address = dto.Address,
-            Category = dto.Category,
-            Description = dto.Description,
-            // Không gán cho thợ nào cụ thể, chuyển sang trạng thái chờ Grab/Giật đơn
-            WorkerId = null, 
-            WorkerName = "Đang chờ thợ nhận...",
-            IsBroadcast = true, 
-            Status = RequestStatus.Pending,
-            CreatedAt = DateTime.Now
-        };
-
-        _context.RepairRequests.Add(request);
-        await _context.SaveChangesAsync();
-
-        // Broadcast: Gửi Notification cho TẤT CẢ thợ có trên nền tảng
-        var allWorkerUsers = await _context.Users
-            .Where(u => u.Role == UserRole.Worker && u.WorkerProfileId != null)
-            .ToListAsync();
-
-        foreach (var wu in allWorkerUsers)
-        {
-            _context.Notifications.Add(new Notification
-            {
-                UserPhone = wu.Phone,
-                Title = "📢 Yêu cầu nhanh mới!",
-                Message = $"{dto.CustomerName} cần sửa \"{dto.Category}\" tại {dto.Address}. Ai nhận trước được tiên!",
-                Type = "broadcast_request",
-                RelatedRequestId = request.Id,
-                CreatedAt = DateTime.Now
-            });
-        }
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetRequest), new { id = request.Id }, request);
-    }
-    
-    // ... Phần logic xử lý Multi-Select hoặc Single-Worker (đã ẩn đi cho gọn)
-}
 
 
 }
