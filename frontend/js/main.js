@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (selectedCategories.length > 0) params.append("category", selectedCategories.join(","));
         if (locationStr)              params.append("location", locationStr);
 
-        const API_URL = "http://localhost:5111";
+        const API_URL = "http://localhost:5178";
         const url = `${API_URL}/api/profiles/search?${params.toString()}`;
 
         // Show loading
