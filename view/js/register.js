@@ -173,6 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const parts = [detail, wardText, distText, provText].filter(p => p && p !== '' && !p.startsWith('--'));
             payload.address = parts.join(', ');
+
+            // location: district, province (main search area)
+            const locParts = [distText, provText].filter(p => p && p !== '' && !p.startsWith('--'));
+            payload.location = locParts.join(', ');
         }
 
         // Disable button while submitting
