@@ -4,8 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const repairmanFields = document.getElementById('repairmanFields');
     const submitBtn = document.getElementById('submitBtn');
     let currentRole = 'Customer';
-
-    // DOM refs
     const fullNameInput = document.getElementById('fullName');
     const phoneInput = document.getElementById('phone');
     const passwordInput = document.getElementById('password');
@@ -19,10 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneError = document.getElementById('phoneError');
     const passwordError = document.getElementById('passwordError');
 
-    // Store API data
     let allProvinces = [];
 
-    // === ROLE TAB SWITCHING ===
     roleTabs.forEach(tab => {
         tab.addEventListener('click', () => {
             roleTabs.forEach(t => t.classList.remove('active'));

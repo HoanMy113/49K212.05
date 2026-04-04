@@ -293,14 +293,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // 2. Chứa cấu hình bộ lọc trạng thái (Status 3 = Đã hủy)
-    const filterMap = {
-        'pending':   { statuses: [0], label: '— Đang chờ' },
-        'confirmed': { statuses: [1], label: '— Đã xác nhận' },
-        'completed': { statuses: [2], label: '— Hoàn thành' },
-        'cancelled': { statuses: [3], label: '— Đã huỷ' }
-    };
-
     // 3. Hàm xử lý LỌC danh sách khi người dùng bấm vào Tab "Đã hủy"
     function applyFilter() {
         let filtered;
