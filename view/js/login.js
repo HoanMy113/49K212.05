@@ -51,4 +51,41 @@ document.addEventListener('DOMContentLoaded', () => {
             loginError.style.display = 'block';
         }
     });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const phone = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/Auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password, role: currentRole })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                // Lưu thông tin vào sessionStorage
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('userPhone', phone);
+                sessionStorage.setItem("userRole", currentRole);
+                sessionStorage.setItem('fullName', data.fullName || 'Người dùng');
+                
+                // Điều hướng dựa trên vai trò
+                if (currentRole === "Repairman") {
+                    window.location.href = "worker-dashboard.html";
+                } else {
+                    window.location.href = "index.html";
+                }
+            } else {
+                const errorText = await response.text();
+                loginError.textContent = errorText || 'Số điện thoại hoặc mật khẩu không chính xác.';
+                loginError.style.display = 'block';
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Lỗi kết nối máy chủ.');
+        }
+    });
 });
