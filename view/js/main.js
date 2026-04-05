@@ -326,10 +326,10 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleLogout(e) {
         if (e) e.preventDefault();
         sessionStorage.clear();
-        window.location.replace("index.html");
+        window.location.replace("login.html");
     }
     document.addEventListener("click", function (e) {
-        const target = e.target.closest("#logoutBtn, #logoutBtnSide, .btn-logout-side");
+        const target = e.target.closest("#logoutBtn, #logoutBtnSide, .btn-logout-side, .logout-btn");
         if (target) handleLogout(e);
     });
 
