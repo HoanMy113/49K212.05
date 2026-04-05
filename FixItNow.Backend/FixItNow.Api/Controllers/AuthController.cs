@@ -42,3 +42,10 @@ public async Task<IActionResult> Register([FromBody] RegisterDto dto)
 
     return Ok(new { message = "Đăng ký thợ sửa chữa thành công" });
 }
+[HttpPost("logout")]
+public IActionResult Logout()
+{
+    // Hệ thống hiện tại dùng SessionStorage (stateless), nên BE chỉ trả OK.
+    // Trong tương lai có thể mở rộng: vô hiệu hóa Refresh Token, ghi log audit, v.v.
+    return Ok(new { message = "Đăng xuất thành công." });
+}
