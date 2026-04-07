@@ -109,4 +109,33 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Đổi mật khẩu thành công." });
     }
+
+    // File: FixItNow.Backend/FixItNow.Api/Controllers/AuthController.cs
+
+[HttpPost("change-password")]
+public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+{
+    // Backend yêu cầu Số điện thoại truyền trực tiếp thông qua Header "X-User-Phone"
+    var requestPhone = Request.Headers["X-User-Phone"].FirstOrDefault();
+    if (string.IsNullOrEmpty(requestPhone))
+        return BadRequest("Thiếu thông tin số điện thoại người dùng.");
+
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.Phone == requestPhone);
+    if (user == null)
+        return NotFound("Người dùng không tồn tại.");
+
+    // Kiểm tra mật khẩu cũ
+    if (user.PasswordHash != dto.OldPassword)
+        return BadRequest("Mật khẩu hiện tại không chính xác.");
+
+    // Validate độ dài mật khẩu mới
+    if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 6)
+        return BadRequest("Mật khẩu mới phải có ít nhất 6 ký tự.");
+
+    // Cập nhật và lưu vào cơ sở dữ liệu
+    user.PasswordHash = dto.NewPassword;
+    await _context.SaveChangesAsync();
+
+    return Ok(new { message = "Đổi mật khẩu thành công." });
+}
 }
