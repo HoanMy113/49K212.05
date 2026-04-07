@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập | FixItNow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(135deg, #eaf3ed 0%, #d4e8dc 100%);
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .auth-wrapper {
+            width: 100%;
+            max-width: 460px;
+        }
+
+        /* Back to Home */
+        .back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #4e7d63;
+            font-weight: 700;
+            font-size: 15px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+        .back-home:hover {
+            color: #3a6b52;
+            transform: translateX(-3px);
+        }
+
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4e7d63, #3a9d6e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        .auth-header p {
+            color: #888;
+            font-size: 15px;
+        }
+
+        /* Role Tabs */
+        .role-tabs {
+            display: flex;
+            background: #f0f1f4;
+            padding: 5px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+        .role-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #666;
+            transition: all 0.25s;
+            font-size: 14px;
+        }
+        .role-tab.active {
+            background: white;
+            color: #4e7d63;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .role-tab i { margin-right: 6px; }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.2s;
+            background: #fcfcfc;
+        }
+        .form-control:focus {
+            border-color: #4e7d63;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(78,125,99,0.1);
+            background: white;
+        }
+
+        /* Error */
+        #loginError {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            border: 1px solid #fde2e2;
+        }
+
+        /* Submit */
+        .auth-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #4e7d63, #3a9d6e);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(78,125,99,0.3);
+            font-family: 'Nunito', sans-serif;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(78,125,99,0.4);
+        }
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+        .auth-links a {
+            color: #4e7d63;
+            text-decoration: none;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại trang chủ</a>
+
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>FixItNow</h1>
+                <p>Chào mừng bạn quay trở lại!</p>
+            </div>
+
+            <div class="role-tabs" id="roleTabs">
+                <div class="role-tab active" data-role="Customer"><i class="fa-solid fa-user"></i> Khách hàng</div>
+                <div class="role-tab" data-role="Repairman"><i class="fa-solid fa-wrench"></i> Thợ sửa chữa</div>
+            </div>
+
+            <div id="loginError">Số điện thoại hoặc mật khẩu không chính xác.</div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" id="phone" class="form-control" placeholder="Nhập số điện thoại" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mật khẩu</label>
+                    <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu" required>
+                </div>
+                <button type="submit" class="auth-btn"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</button>
+            </form>
+
+            <div class="auth-links">
+                Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

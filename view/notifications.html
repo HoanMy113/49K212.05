@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo | FixItNow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background: #eaf3ed;
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding-top: 90px;
+            min-height: 100vh;
+        }
+        .page-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+        .page-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title i { color: #f39c12; }
+        .page-subtitle {
+            color: #777;
+            font-size: 15px;
+            margin-bottom: 25px;
+        }
+        
+        /* Helper for back button hover */
+        .hover-translate:hover {
+            color: #4e7d63 !important;
+            transform: translateX(-3px);
+        }
+
+        /* Notification Cards */
+        .notif-list {
+            display: grid;
+            gap: 15px;
+        }
+        .notif-card {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+            border-left: 5px solid #4e7d63;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .notif-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .notif-card.unread {
+            background: linear-gradient(135deg, #f0f7f3 0%, #e8f5ee 100%);
+            border-left-color: #f39c12;
+        }
+        .notif-card.unread::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(243,156,18,0.4);
+        }
+        .notif-title {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        .notif-card.unread .notif-title {
+            font-weight: 800;
+        }
+        .notif-message {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        .notif-time {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .notif-time i { font-size: 11px; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            background: white;
+            border-radius: 20px;
+            color: #888;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+        }
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        .empty-state p {
+            color: #777;
+            font-size: 16px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar-custom bg-white border-bottom shadow-sm">
+    <div class="container nav-wrapper d-flex justify-content-between align-items-center">
+        <!-- Khối Logo (Trái) -->
+        <a href="index.html" class="logo d-flex align-items-center gap-2 text-dark text-decoration-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span class="fs-4 fw-bold">FixItNow</span>
+        </a>
+
+        <!-- Khối Avatar + Thông báo (Phải) -->
+        <div class="nav-actions d-flex align-items-center gap-3">
+            <a href="notifications.html" class="nav-icon d-flex align-items-center justify-content-center p-0 m-0 text-decoration-none">
+                <img src="assets/images/bell.png" alt="Thông báo" style="width:24px; height:24px; object-fit: contain;">
+            </a>
+            
+            <div class="user-dropdown position-relative">
+                <div class="user-btn d-flex align-items-center gap-2" id="userAvatar" style="cursor:pointer;">
+                    <img src="assets/images/user.png" class="user-avatar shadow-sm border" style="width:34px; height:34px; border-radius:50%; object-fit:cover;">
+                    <span class="fw-semibold text-dark fs-6" id="username">Người dùng</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="customer-profile.html"><i class="fa-solid fa-user"></i> Hồ sơ của tôi</a>
+                    <a href="my-requests.html"><i class="fa-solid fa-clipboard-list"></i> Yêu cầu của tôi</a>
+                    <a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket text-danger"></i> Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="page-container mt-4">
+    <a href="index.html" class="text-decoration-none text-muted link-primary d-inline-flex align-items-center mb-4 fw-semibold transition-all hover-translate"><i class="fa-solid fa-arrow-left me-2"></i> Quay lại trang chủ</a>
+
+    <div class="page-title"><i class="fas fa-bell"></i> Thông báo</div>
+    <p class="page-subtitle">Cập nhật mới nhất về các yêu cầu sửa chữa và hoạt động tài khoản của bạn</p>
+
+    <div id="notifList" class="notif-list">
+        <div class="text-center py-5">
+            <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+            <h5 style="color:#2c3e50; font-weight:700;">Đang tải thông báo...</h5>
+        </div>
+    </div>
+    
+    <!-- PAGINATION -->
+    <nav aria-label="Page navigation" id="paginationNav" class="mt-4" style="display: none;">
+        <ul class="pagination justify-content-center" id="paginationList">
+        </ul>
+    </nav>
+</main>
+
+<footer class="footer">
+    © 2026 FixItNow - Website kết nối sửa chữa dân dụng tức thời
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/notifications.js"></script>
+<script>
+    // Navbar logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const usernameEl = document.getElementById("username");
+        if (usernameEl) usernameEl.textContent = sessionStorage.getItem("fullName") || "Người dùng";
+
+        const userAvatar = document.getElementById("userAvatar");
+        const dropdownMenu = document.querySelector(".dropdown-menu");
+        if (userAvatar && dropdownMenu) {
+            let isOpen = false;
+            userAvatar.addEventListener("click", (e) => { e.stopPropagation(); isOpen = !isOpen; dropdownMenu.classList.toggle("show", isOpen); });
+            document.addEventListener("click", (e) => { if (isOpen && !dropdownMenu.contains(e.target)) { dropdownMenu.classList.remove("show"); isOpen = false; } });
+        }
+
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) logoutBtn.addEventListener("click", (e) => { e.preventDefault(); sessionStorage.clear(); window.location.href = "login.html"; });
+    });
+</script>
+</body>
+</html>

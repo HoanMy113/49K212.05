@@ -1,0 +1,14 @@
+namespace FixItNow.Api.DTOs;
+
+public class UpdateProfileRequest
+{
+    public string NameOrStore { get; set; } = string.Empty;
+    public string PhoneNumber { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public List<string> Services { get; set; } = new List<string>();
+    public string Location { get; set; } = string.Empty;
+    public string? AvatarUrl { get; set; }
+    public double Rating { get; set; } = 0.0;
+    public bool IsActive { get; set; }
+}

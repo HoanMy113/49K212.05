@@ -1,0 +1,63 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
+    const roleTabs = document.querySelectorAll('.role-tab');
+    let currentRole = 'Customer';
+
+    roleTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            roleTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentRole = tab.dataset.role;
+        });
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const phone = document.getElementById('phone').value;
+        const password = document.getElementById('password').value;
+        const loginError = document.getElementById('loginError');
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/Auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password, role: currentRole })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('userPhone', phone);
+                sessionStorage.setItem("userRole", currentRole); // Changed from currentRole to currentRole (was 'role' in instruction, but currentRole is the variable)
+                sessionStorage.setItem('fullName', data.fullName || 'Người dùng');
+                
+                if (data.workerProfileId) {
+                    sessionStorage.setItem("workerProfileId", data.workerProfileId);
+                }
+
+                // ====== BẢO MẬT: Lưu JWT Token để gọi API bảo mật ======
+                if (data.token) {
+                    sessionStorage.setItem('authToken', data.token);
+                }
+
+                if (data.avatarUrl) {
+                    const fullUrl = data.avatarUrl.startsWith("http") ? data.avatarUrl : (API_BASE_URL + data.avatarUrl);
+                    sessionStorage.setItem('userAvatar', fullUrl);
+                }
+
+                if (currentRole === "Repairman") { // Used currentRole for conditional redirect
+                    window.location.href = "worker-dashboard.html";
+                } else {
+                    window.location.href = "index.html";
+                }
+            } else {
+                const errorText = await response.text();
+                loginError.textContent = errorText || 'Số điện thoại hoặc mật khẩu không chính xác.';
+                loginError.style.display = 'block';
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Lỗi kết nối máy chủ.');
+        }
+    });
+});

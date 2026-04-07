@@ -1,0 +1,60 @@
+/* ================= GLOBAL ================= */
+body {
+   font-family: 'Nunito', sans-serif;
+   cursor: pointer !important;
+}
+.user-avatar{
+   cursor:pointer;
+   object-fit:contain;
+}
+.nav-user{
+   display:flex;
+   align-items:center;
+}
+.nav-user .user-avatar{
+   width:38px !important;
+   height:38px !important;
+}
+/* ================= NAV MENU ================= */
+.nav-menu{
+   display:flex;
+   align-items:center;
+   gap:30px;
+}
+.nav-link{
+   text-decoration:none;
+   font-weight:700;
+   color:#4e7d63;
+   font-size:16px;
+   position:relative;
+}
+.nav-link:hover{
+   color:#3f6650;
+}
+.nav-wrapper{
+   display:flex;
+   align-items:center;
+}
+/* logo + menu */
+.logo{
+   margin-right:40px;
+}
+/* nhóm trái */
+.nav-menu{
+   display:flex;
+   align-items:center;
+   gap:40px;
+   margin-left:auto;
+}
+.nav-actions{
+   display:flex;
+   align-items:center;
+   gap:40px;
+   margin-left:40px;
+}
+/* ================= PROFILE DETAILS CARD ================= */
+.profile-details-card {
+   background: white;
+   font-size: 14px;
+   font-weight: 600;
+}

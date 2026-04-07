@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết hồ sơ thợ | FixItNow</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- CSS riêng của page -->
+    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif !important;
+        }
+    </style>
+</head>
+
+<body style="background: #f8f9fa;">
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar-custom">
+        <div class="container nav-wrapper">
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">FixItNow</a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Trang chủ</a>
+                <a href="my-requests.html" class="nav-link">Quản lý yêu cầu</a>
+            </div>
+            <div class="nav-actions">
+                <div class="nav-guest" style="display: flex; align-items: center;">
+                    <a href="login.html" class="btn-login" style="margin-right: 15px; text-decoration: none;">Đăng nhập</a>
+                    <a href="register.html" class="btn-register" style="text-decoration: none;">Đăng ký</a>
+                </div>
+                <div class="nav-user" style="display: none; align-items: center; gap: 30px;">
+                    <div class="nav-icon">
+                        <img src="assets/images/bell.png" alt="bell">
+                    </div>
+                    <div class="user-dropdown">
+                        <img id="userAvatar" src="assets/images/user.png" class="user-avatar" alt="user" />
+                        <div class="dropdown-menu">
+                            <a href="my-requests.html"><img src="assets/images/list.png" width="18" alt="list"> Quản lý yêu cầu</a>
+                            <a href="profile.html"><img src="assets/images/avatar.png" width="18" alt="profile"> Quản lý hồ sơ</a>
+                            <a href="#" id="logoutBtn"><img src="assets/images/logout.png" width="18" alt="logout"> Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= CONTENT ================= -->
+    <main>
+    </main>
+    <section class="profile-wrapper mt-5 pb-5">
+        <div class="container">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs mb-4">
+                <a href="index.html" style="color: #4e7d63; text-decoration: none; font-weight: 700;">
+                    <i class="fa-solid fa-arrow-left me-2"></i> Quay lại tìm kiếm
+                </a>
+            </div>
+
+            <!-- CHƯA CÓ HỒ SƠ / LỖI / ĐANG TẢI -->
+            <div class="empty-profile-box text-center py-5" id="emptyProfileBox">
+                <div class="spinner-border text-success mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                <h4 id="statusMessage" style="color:#2c3e50; font-weight:700;">Đang tải thông tin thợ...</h4>
+            </div>
+
+            <!-- ĐÃ CÓ HỒ SƠ -->
+            <div class="existing-profile-box" id="existingProfileBox" style="display: none;">
+                <div class="row g-4">
+                    <!-- Cột trái: Thông tin cơ bản & Liên hệ -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm rounded-4 text-center p-4 h-100" style="background: white;">
+                            <img id="displayAvatar" src="assets/images/user.png" class="rounded-circle mx-auto mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #eaf3ed;" alt="Avatar">
+                            <h3 id="displayName" style="font-weight: 800; color: #2c3e50; font-size: 22px; margin-bottom: 5px;">---</h3>
+                            <p class="badge bg-success bg-opacity-10 text-success mb-3" style="font-size: 14px; padding: 6px 12px; border-radius: 20px;">Thợ sửa chuyên nghiệp</p>
+                            
+                            <div class="worker-rating mb-4" style="color: #f39c12; font-size: 18px;">
+                                <span id="displayRatingHtml">★★★★★</span> 
+                                <span id="displayRatingScore" style="color: #666; font-size: 16px; font-weight: 700; margin-left: 5px;">5.0</span>
+                            </div>
+
+                            <button class="btn w-100 mb-4" id="bookBtn" style="background: linear-gradient(135deg, #4e7d63, #3a9d6e); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 15px rgba(78,125,99,0.3); transition: all 0.2s;">
+                                <i class="fa-solid fa-calendar-check me-2"></i> Đặt lịch thợ này ngay
+                            </button>
+
+                            <hr style="border-color: #eee;">
+
+                            <div class="text-start mt-4">
+                                <h5 style="font-weight: 800; color: #2c3e50; margin-bottom: 20px; font-size: 16px;">Thông tin liên hệ</h5>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="width: 36px; height: 36px; background: #eaf3ed; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4e7d63; margin-right: 12px;">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 12px;">Số điện thoại</small>
+                                        <strong id="displayPhone" style="color: #2c3e50; font-size: 15px;">---</strong>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center mb-3">
+                                    <div style="width: 36px; height: 36px; background: #eaf3ed; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4e7d63; margin-right: 12px;">
+                                        <i class="fa-solid fa-map-location-dot"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 12px;">Khu vực hoạt động</small>
+                                        <strong id="displayLocation" style="color: #2c3e50; font-size: 14px; line-height: 1.4;">---</strong>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start">
+                                    <div style="width: 36px; height: 36px; background: #eaf3ed; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4e7d63; margin-right: 12px; flex-shrink: 0;">
+                                        <i class="fa-solid fa-house"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 12px;">Địa chỉ chi tiết</small>
+                                        <strong id="displayAddress" style="color: #2c3e50; font-size: 14px; line-height: 1.4;">---</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cột phải: Dịch vụ & Mô tả & Đánh giá -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 mb-4" style="background: white;">
+                            <h4 style="font-weight: 800; color: #2c3e50; margin-bottom: 20px; font-size: 18px;">
+                                <i class="fa-solid fa-screwdriver-wrench text-success me-2"></i> Dịch vụ cung cấp
+                            </h4>
+                            <div id="displayServices" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <!-- Render dynamically in JS -->
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm rounded-4 p-4" style="background: white;">
+                            <h4 style="font-weight: 800; color: #2c3e50; margin-bottom: 15px; font-size: 18px;">
+                                <i class="fa-solid fa-circle-info text-info me-2"></i> Giới thiệu & Kinh nghiệm
+                            </h4>
+                            <div id="displayDescription" style="color: #555; line-height: 1.8; font-size: 15px; white-space: pre-line; background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px dashed #ddd;">
+                                ---
+                            </div>
+                        </div>
+
+                        <!-- ĐÁNH GIÁ TỪ KHÁCH HÀNG -->
+                        <div class="card border-0 shadow-sm rounded-4 p-4 mt-4" style="background: white;">
+                            <h4 style="font-weight: 800; color: #2c3e50; margin-bottom: 20px; font-size: 18px;">
+                                Đánh giá từ khách hàng
+                            </h4>
+                            <div id="customerReviews">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-success spinner-border-sm" role="status"></div>
+                                    <p class="text-muted mt-2 mb-0" style="font-size:14px;">Đang tải đánh giá...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer mt-auto py-4 text-center text-muted" style="background: white; border-top: 1px solid #eee;">
+        © 2026 FixItNow - Website kết nối sửa chữa dân dụng tức thời
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Navbar Auth UI
+            const navGuest = document.querySelector(".nav-guest");
+            const navUser = document.querySelector(".nav-user");
+
+            function updateNavbar() {
+                if (sessionStorage.getItem("isLoggedIn") === "true") {
+                    if (navGuest) navGuest.style.display = "none";
+                    if (navUser) navUser.style.display = "flex";
+                } else {
+                    if (navUser) navUser.style.display = "none";
+                    if (navGuest) navGuest.style.display = "flex";
+                }
+            }
+            updateNavbar();
+
+            document.getElementById("logoutBtn")?.addEventListener("click", function (e) {
+                e.preventDefault();
+                sessionStorage.clear();
+                window.location.href = "index.html";
+            });
+
+            const userAvatar = document.getElementById("userAvatar");
+            const userMenu = document.querySelector(".user-dropdown .dropdown-menu");
+            userAvatar?.addEventListener("click", function (e) {
+                e.stopPropagation();
+                if (userMenu) userMenu.style.display = userMenu.style.display === "flex" ? "none" : "flex";
+            });
+            document.addEventListener("click", function () {
+                if (userMenu) userMenu.style.display = "none";
+            });
+
+            // Book Button Listener
+            document.getElementById('bookBtn')?.addEventListener('click', () => {
+                const searchParams = new URLSearchParams(window.location.search);
+                const wId = searchParams.get('id');
+                const wName = document.getElementById('displayName').innerText;
+                
+                if (sessionStorage.getItem("isLoggedIn") !== "true") {
+                    alert("Vui lòng đăng nhập để đặt lịch thợ.");
+                    window.location.href = "login.html";
+                    return;
+                }
+                
+                if (wId) {
+                    window.location.href = `create-request.html?workerId=${wId}&workerName=${encodeURIComponent(wName)}`;
+                } else {
+                    alert('Lỗi: Không tìm thấy ID thợ.');
+                }
+            });
+        });
+    </script>
+    <script src="js/worker-detail.js"></script>
+</body>
+</html>

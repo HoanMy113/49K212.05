@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh giá dịch vụ | FixItNow</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { background: #f8f9fa; font-family: 'Nunito', sans-serif; margin: 0; padding-top: 90px; min-height: 100vh; }
+        .review-container { max-width: 600px; margin: 0 auto; padding: 0 20px 40px; }
+        
+        /* Star Rating */
+        .star-rating .star { cursor: pointer; transition: transform 0.2s ease, color 0.2s ease; }
+        .star-rating .star:hover { transform: scale(1.25); color: #ffc107 !important; }
+        
+        /* Form Focus */
+        .form-control:focus { border-color: #4e7d63; box-shadow: 0 0 0 3px rgba(78,125,99,0.15) !important; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar-custom bg-white border-bottom shadow-sm">
+    <div class="container nav-wrapper d-flex justify-content-between align-items-center">
+        <!-- Khối Logo (Trái) -->
+        <a href="index.html" class="logo d-flex align-items-center gap-2 text-dark text-decoration-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-success"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span class="fs-4 fw-bold">FixItNow</span>
+        </a>
+
+        <!-- Khối Avatar + Thông báo (Phải) -->
+        <div class="nav-actions d-flex align-items-center gap-3">
+            <a href="notifications.html" class="nav-icon d-flex align-items-center justify-content-center p-0 m-0 text-decoration-none">
+                <img src="assets/images/bell.png" alt="Thông báo" style="width:24px; height:24px; object-fit: contain;">
+            </a>
+            
+            <div class="user-dropdown position-relative">
+                <div class="user-btn d-flex align-items-center gap-2" id="userAvatar" style="cursor:pointer;">
+                    <img src="assets/images/user.png" class="user-avatar shadow-sm border" style="width:34px; height:34px; border-radius:50%; object-fit:cover;">
+                    <span class="fw-semibold text-dark fs-6" id="username">Người dùng</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="customer-profile.html"><i class="fa-solid fa-user"></i> Hồ sơ của tôi</a>
+                    <a href="my-requests.html"><i class="fa-solid fa-clipboard-list"></i> Yêu cầu của tôi</a>
+                    <a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket text-danger"></i> Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<main class="review-container mt-4">
+    <a href="my-requests.html" class="text-decoration-none text-secondary d-inline-flex align-items-center mb-4 fw-semibold"><i class="bi bi-arrow-left me-2"></i> Quay lại yêu cầu</a>
+
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+        <h3 class="text-center fw-bold fs-3 text-dark mb-2">Đánh giá dịch vụ</h3>
+        <p class="text-center text-muted fw-medium mb-4 pb-2">Chia sẻ trải nghiệm của bạn để giúp cải thiện chất lượng</p>
+
+        <form id="reviewForm">
+            <!-- Star Rating -->
+            <div class="text-center border-bottom pb-4 mb-4">
+                <label class="d-block text-uppercase text-secondary fw-bold small mb-3 flex-shrink-0" style="letter-spacing: 1px;">Chất lượng dịch vụ</label>
+                <div class="star-rating d-flex justify-content-center gap-3" id="starRating">
+                    <i class="bi bi-star star fs-2 text-secondary" data-rating="1"></i>
+                    <i class="bi bi-star star fs-2 text-secondary" data-rating="2"></i>
+                    <i class="bi bi-star star fs-2 text-secondary" data-rating="3"></i>
+                    <i class="bi bi-star star fs-2 text-secondary" data-rating="4"></i>
+                    <i class="bi bi-star star fs-2 text-secondary" data-rating="5"></i>
+                </div>
+                <div class="rating-text mt-3 fw-bold text-warning fs-5" id="ratingText" style="min-height: 28px;"></div>
+            </div>
+
+            <!-- Comment -->
+            <div class="mb-4">
+                <label class="form-label text-uppercase text-secondary fw-bold small mb-2" style="letter-spacing: 0.5px;">Bình luận</label>
+                <textarea id="comment" class="form-control form-control-lg shadow-none border-2 bg-light" placeholder="Ví dụ: Thợ nhiệt tình, sửa chữa nhanh chóng..." required rows="4" style="resize: vertical; min-height: 120px; font-size: 15px;"></textarea>
+            </div>
+
+            <button type="submit" class="btn w-100 text-white fw-bold py-3 rounded-3 shadow-sm" style="background-color: #4e7d63; font-size: 16px;">Gửi đánh giá</button>
+        </form>
+    </div>
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/main.js"></script>
+<script src="js/review.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const usernameEl = document.getElementById("username");
+        if (usernameEl) usernameEl.textContent = sessionStorage.getItem("fullName") || sessionStorage.getItem("userName") || "Người dùng";
+
+        const userAvatar = document.getElementById("userAvatar");
+        const dropdownMenu = document.querySelector(".dropdown-menu");
+        if (userAvatar && dropdownMenu) {
+            let isOpen = false;
+            userAvatar.addEventListener("click", (e) => { e.stopPropagation(); isOpen = !isOpen; dropdownMenu.classList.toggle("show", isOpen); });
+            document.addEventListener("click", (e) => { if (isOpen && !dropdownMenu.contains(e.target)) { dropdownMenu.classList.remove("show"); isOpen = false; } });
+        }
+
+        document.getElementById("logoutBtn")?.addEventListener("click", (e) => { e.preventDefault(); sessionStorage.clear(); window.location.href = "login.html"; });
+    });
+</script>
+</body>
+</html>
