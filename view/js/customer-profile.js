@@ -195,10 +195,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             };
 
             // ====== BẢO MẬT: Dùng authFetch gắn JWT Token thay vì Header X-User-Phone ======
+            // CẦN BỔ SUNG X-User-Phone VÌ BACKEND FETCH TRỰC TIẾP TỪ HEADER NÀY
             const response = await authFetch(`${API_BASE_URL}/api/Auth/change-password`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "X-User-Phone": userPhone
                 },
                 body: JSON.stringify(payload)
             });
