@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,16 +10,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body { background-color: #f4f7f6; font-family: 'Nunito', sans-serif; padding: 0 !important; margin: 0; }
-        
+        body {
+            background-color: #f4f7f6;
+            font-family: 'Nunito', sans-serif;
+            padding: 0 !important;
+            margin: 0;
+        }
+
         /* Dashboard Layout */
-        .dashboard-wrapper { display: flex; min-height: 100vh; }
-        
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
         /* Sidebar */
         .sidebar {
             width: 250px;
             background: #fff;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
             padding: 30px 20px;
             display: flex;
             flex-direction: column;
@@ -28,6 +37,7 @@
             z-index: 100;
             flex-shrink: 0;
         }
+
         .sidebar .brand {
             font-size: 24px;
             font-weight: 800;
@@ -36,7 +46,14 @@
             margin-bottom: 40px;
             text-decoration: none;
         }
-        .sidebar-menu { list-style: none; padding: 0; margin: 0; flex-grow: 1; }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1;
+        }
+
         .sidebar-link {
             display: flex;
             align-items: center;
@@ -49,13 +66,28 @@
             margin-bottom: 10px;
             transition: all 0.3s ease;
         }
-        .sidebar-link:hover, .sidebar-link.active {
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
             background: #eaf3ed;
             color: #4e7d63;
         }
-        .sidebar-link i { font-size: 18px; width: 20px; text-align: center; }
-        .logout-btn { color: #dc3545; margin-top: auto; }
-        .logout-btn:hover { background: #fdf7f7; color: #dc3545; }
+
+        .sidebar-link i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .logout-btn {
+            color: #dc3545;
+            margin-top: auto;
+        }
+
+        .logout-btn:hover {
+            background: #fdf7f7;
+            color: #dc3545;
+        }
 
         /* Main Content */
         .main-content {
@@ -63,7 +95,7 @@
             padding: 15px 25px;
             min-height: 100vh;
         }
-        
+
         /* Topbar */
         .topbar {
             display: flex;
@@ -71,9 +103,20 @@
             align-items: center;
             margin-bottom: 20px;
         }
-        .welcome-text h2 { margin: 0; font-size: 22px; font-weight: 800; color: #333; }
-        .welcome-text p { margin: 0; color: #888; font-size: 13px; }
-        
+
+        .welcome-text h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #333;
+        }
+
+        .welcome-text p {
+            margin: 0;
+            color: #888;
+            font-size: 13px;
+        }
+
         /* Stats Cards */
         .stats-grid {
             display: grid;
@@ -81,27 +124,32 @@
             gap: 15px;
             margin-bottom: 25px;
         }
+
         .stat-card {
             background: #fff;
             border-radius: 12px;
             padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
             display: flex;
             align-items: center;
             gap: 15px;
             transition: all 0.2s;
         }
+
         .stat-card[data-filter] {
             cursor: pointer;
         }
+
         .stat-card[data-filter]:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
             transform: translateY(-1px);
         }
+
         .stat-card.active {
             outline: 2px solid #4e7d63;
             outline-offset: -2px;
         }
+
         .stat-icon {
             width: 45px;
             height: 45px;
@@ -111,24 +159,60 @@
             justify-content: center;
             font-size: 18px;
         }
-        .stat-icon.pending { background: #fff8e1; color: #ffa000; }
-        .stat-icon.completed { background: #eaf3ed; color: #4e7d63; }
-        .stat-icon.rating { background: #fdf2f8; color: #ec4899; }
-        .stat-icon.cancelled { background: #fce4ec; color: #c62828; }
-        
-        .stat-info h3 { margin: 0; font-size: 22px; font-weight: 800; color: #333; }
-        .stat-info p { margin: 0; color: #888; font-size: 12px; font-weight: 600; }
+
+        .stat-icon.pending {
+            background: #fff8e1;
+            color: #ffa000;
+        }
+
+        .stat-icon.completed {
+            background: #eaf3ed;
+            color: #4e7d63;
+        }
+
+        .stat-icon.rating {
+            background: #fdf2f8;
+            color: #ec4899;
+        }
+
+        .stat-icon.cancelled {
+            background: #fce4ec;
+            color: #c62828;
+        }
+
+        .stat-info h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #333;
+        }
+
+        .stat-info p {
+            margin: 0;
+            color: #888;
+            font-size: 12px;
+            font-weight: 600;
+        }
 
         /* Requests Section */
-        .section-title { font-size: 18px; font-weight: 800; color: #333; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .requests-container {
             background: #fff;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
             min-height: 300px;
         }
-        
+
         /* Request Card Style */
         .request-item {
             border: 1px solid #eee;
@@ -136,28 +220,41 @@
             transition: all 0.2s;
             margin-bottom: 10px;
         }
+
         .request-item:hover {
             border-color: #4e7d63;
-            box-shadow: 0 3px 10px rgba(78,125,99,0.05);
+            box-shadow: 0 3px 10px rgba(78, 125, 99, 0.05);
         }
-        .badge { font-weight: 700; padding: 4px 10px; border-radius: 15px; font-size: 11px; }
+
+        .badge {
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="dashboard-wrapper">
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <a href="index.html" class="brand">FixItNow <span style="color:#f39c12; font-size:16px;">PRO</span></a>
-            
+
             <ul class="sidebar-menu">
                 <li><a href="#" class="sidebar-link active"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
                 <li><a href="profile.html" class="sidebar-link"><i class="fa-solid fa-user-gear"></i> Tài khoản</a></li>
-                <li><a href="worker-notifications.html" class="sidebar-link"><i class="fa-solid fa-bell"></i> Thông báo <span id="sidebarBadge" style="display:none; background:#e74c3c; color:white; font-size:11px; padding:2px 7px; border-radius:10px; margin-left:auto; font-weight:700;"></span></a></li>
-                <li><a href="worker-feedback.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Đánh giá</a></li>
+                <li><a href="worker-notifications.html" class="sidebar-link"><i class="fa-solid fa-bell"></i> Thông báo
+                        <span id="sidebarBadge"
+                            style="display:none; background:#e74c3c; color:white; font-size:11px; padding:2px 7px; border-radius:10px; margin-left:auto; font-weight:700;"></span></a>
+                </li>
+                <li><a href="worker-feedback.html" class="sidebar-link"><i class="fa-solid fa-star"></i> Đánh giá</a>
+                </li>
             </ul>
 
-            <a href="#" id="logoutBtn" class="sidebar-link logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+            <a href="#" id="logoutBtn" class="sidebar-link logout-btn"><i
+                    class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
         </aside>
 
         <!-- MAIN CONTENT -->
@@ -168,13 +265,14 @@
                     <h2 id="welcomeName">Xin chào, Thợ!</h2>
                     <p>Chào mừng trở lại bảng điều khiển</p>
                 </div>
-                
+
                 <div class="availability-status d-flex align-items-center gap-3 p-3 bg-white rounded-4 shadow-sm">
                     <div class="form-check form-switch ps-0 d-flex align-items-center gap-2">
                         <label class="form-check-label fw-bold fs-5 mb-0" for="statusSwitch">
                             Trạng thái: <span id="statusText" class="text-success">Sẵn sàng nhận việc</span>
                         </label>
-                        <input class="form-check-input fs-4 ms-3 cursor-pointer" type="checkbox" role="switch" id="statusSwitch" checked>
+                        <input class="form-check-input fs-4 ms-3 cursor-pointer" type="checkbox" role="switch"
+                            id="statusSwitch" checked>
                     </div>
                 </div>
             </div>
@@ -212,13 +310,20 @@
             </div>
 
             <!-- REQUESTS LIST -->
-            <h3 class="section-title"><i class="fa-solid fa-list-check" style="color:#4e7d63;"></i> Danh sách yêu cầu <span id="filterLabel" style="font-size:14px; font-weight:600; color:#4e7d63;"></span></h3>
+            <h3 class="section-title"><i class="fa-solid fa-list-check" style="color:#4e7d63;"></i> Danh sách yêu cầu
+                <span id="filterLabel" style="font-size:14px; font-weight:600; color:#4e7d63;"></span></h3>
             <div class="requests-container" id="requestsList">
                 <div class="text-center py-5">
                     <i class="fas fa-spinner fa-spin fa-2x text-muted mb-3"></i>
                     <p class="text-muted">Đang tải danh sách yêu cầu...</p>
                 </div>
             </div>
+
+            <!-- PAGINATION -->
+            <nav aria-label="Page navigation" id="paginationNav" class="mt-4" style="display: none;">
+                <ul class="pagination justify-content-center" id="paginationList">
+                </ul>
+            </nav>
         </main>
     </div>
 
@@ -239,4 +344,5 @@
         });
     </script>
 </body>
+
 </html>
