@@ -15,7 +15,7 @@ public class ProfileService : IProfileService
         _context = context;
     }
 
-    public async Task<WorkerProfile> GetProfileAsync(int id)
+    public async Task<WorkerProfile?> GetProfileAsync(int id)
     {
         return await _context.WorkerProfiles.FindAsync(id);
     }
