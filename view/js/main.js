@@ -175,8 +175,12 @@ document.addEventListener("DOMContentLoaded", function () {
             // Inject Notification Bell if missing (Global fix for all pages)
             if (!navUser.querySelector('a[href="notifications.html"]')) {
                 const bellHtml = `
-                    <a href="notifications.html" class="nav-icon" style="text-decoration:none; position:relative; margin-right:15px;">
-                        <img src="assets/images/bell.png" alt="Thông báo" style="width:24px;">
+                    <a href="notifications.html" class="nav-icon" style="text-decoration:none; position:relative; margin-right:12px; display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%; background:#f0f7f4; transition:background 0.2s;" title="Thông báo"
+                       onmouseover="this.style.background='#dceee5'" onmouseout="this.style.background='#f0f7f4'">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
                     </a>
                 `;
                 const userDropdown = navUser.querySelector('.user-dropdown');
