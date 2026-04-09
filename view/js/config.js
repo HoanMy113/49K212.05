@@ -1,4 +1,4 @@
-let API_BASE_URL = "https://buikhanh1-001-site1.qtempurl.com";
+let API_BASE_URL = "https://suachua-production.up.railway.app";
 if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:") {
     API_BASE_URL = "http://localhost:5111";
 }
