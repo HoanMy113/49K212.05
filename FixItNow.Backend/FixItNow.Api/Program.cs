@@ -42,6 +42,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 
+app.UseDefaultFiles(); // Phải đặt trước UseStaticFiles để BE tự động đọc file index.html làm trang chủ
 app.UseStaticFiles(); // Cho phép truy cập ảnh từ wwwroot
 
 app.UseCors("AllowAll");
@@ -49,7 +50,6 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
+// app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 
 app.Run();

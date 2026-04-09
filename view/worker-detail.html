@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -42,15 +42,24 @@
                 </div>
                 <div class="nav-user" style="display: none; align-items: center; gap: 30px;">
                     <div class="nav-icon">
-                        <i class="fa-solid fa-bell"></i>
+                        <img src="assets/images/bell.png" alt="bell">
                     </div>
                     <div class="user-dropdown">
-                        <i class="fa-solid fa-user-circle fa-lg user-avatar"></i>
+                        <img id="userAvatar" src="assets/images/user.png" class="user-avatar" alt="user" />
                         <div class="dropdown-menu">
-                            <a href="my-requests.html"><i class="fa-solid fa-list-check" style="width:18px"></i> Quản lý yêu cầu</a>
-                            <a href="profile.html"><i class="fa-solid fa-id-card" style="width:18px"></i> Quản lý hồ sơ</a>
-                            <a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket" style="width:18px"></i> Đăng xuất</a>
-                        </div>
+                    <a href="#" id="navManageRequests">
+                        <img src="assets/images/list.png" width="18">
+                        Quản lý yêu cầu
+                    </a>
+                    <a href="#" id="navProfileLink">
+                        <img src="assets/images/avatar.png" width="18">
+                        Quản lý hồ sơ
+                    </a>
+                    <a href="#" id="logoutBtn">
+                        <img src="assets/images/logout.png" width="18">
+                        Đăng xuất
+                    </a>
+                </div>
                     </div>
                 </div>
             </div>
@@ -81,7 +90,7 @@
                     <!-- Cột trái: Thông tin cơ bản & Liên hệ -->
                     <div class="col-lg-4">
                         <div class="card border-0 shadow-sm rounded-4 text-center p-4 h-100" style="background: white;">
-                            <img id="displayAvatar" src="https://ui-avatars.com/api/?name=User&background=eaf3ed&color=2e7d32" class="rounded-circle mx-auto mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #eaf3ed;" alt="Avatar">
+                            <img id="displayAvatar" src="assets/images/user.png" class="rounded-circle mx-auto mb-3" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid #eaf3ed;" alt="Avatar">
                             <h3 id="displayName" style="font-weight: 800; color: #2c3e50; font-size: 22px; margin-bottom: 5px;">---</h3>
                             <p class="badge bg-success bg-opacity-10 text-success mb-3" style="font-size: 14px; padding: 6px 12px; border-radius: 20px;">Thợ sửa chuyên nghiệp</p>
                             
@@ -172,39 +181,9 @@
     </footer>
 
     <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Navbar Auth UI
-            const navGuest = document.querySelector(".nav-guest");
-            const navUser = document.querySelector(".nav-user");
-
-            function updateNavbar() {
-                if (sessionStorage.getItem("isLoggedIn") === "true") {
-                    if (navGuest) navGuest.style.display = "none";
-                    if (navUser) navUser.style.display = "flex";
-                } else {
-                    if (navUser) navUser.style.display = "none";
-                    if (navGuest) navGuest.style.display = "flex";
-                }
-            }
-            updateNavbar();
-
-            document.getElementById("logoutBtn")?.addEventListener("click", function (e) {
-                e.preventDefault();
-                sessionStorage.clear();
-                window.location.href = "index.html";
-            });
-
-            const userAvatar = document.getElementById("userAvatar");
-            const userMenu = document.querySelector(".user-dropdown .dropdown-menu");
-            userAvatar?.addEventListener("click", function (e) {
-                e.stopPropagation();
-                if (userMenu) userMenu.style.display = userMenu.style.display === "flex" ? "none" : "flex";
-            });
-            document.addEventListener("click", function () {
-                if (userMenu) userMenu.style.display = "none";
-            });
-
             // Book Button Listener
             document.getElementById('bookBtn')?.addEventListener('click', () => {
                 const searchParams = new URLSearchParams(window.location.search);

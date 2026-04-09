@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FixItNow.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260321080016_AddRejectedWorkerIds")]
-    partial class AddRejectedWorkerIds
+    [Migration("20260409122219_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

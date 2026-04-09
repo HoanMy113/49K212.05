@@ -65,6 +65,17 @@ public class ReviewsController : ControllerBase
         return Ok(review);
     }
 
+    // Kiểm tra đã đánh giá cho requestId chưa
+    [HttpGet("request/{requestId}")]
+    public async Task<IActionResult> GetReviewByRequest(int requestId)
+    {
+        var review = await _context.Reviews
+            .FirstOrDefaultAsync(r => r.RequestId == requestId);
+        if (review == null)
+            return NotFound(new { message = "Chưa có đánh giá cho đơn này." });
+        return Ok(review);
+    }
+
     [HttpGet("worker/{workerId}")]
     public async Task<IActionResult> GetWorkerReviews(int workerId)
     {

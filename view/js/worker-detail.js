@@ -54,8 +54,15 @@ document.addEventListener("DOMContentLoaded", function () {
         displayLocation.textContent = data.location || "Chưa cập nhật";
         displayDescription.textContent = data.description || "Chưa có thông tin giới thiệu.";
 
-        if (data.avatarUrl && displayAvatar) {
+        const validAvatar = data.avatarUrl && typeof data.avatarUrl === 'string' && data.avatarUrl.trim() !== '' && data.avatarUrl !== 'null';
+        if (validAvatar && displayAvatar) {
             displayAvatar.src = data.avatarUrl.startsWith('http') ? data.avatarUrl : (API_BASE_URL + data.avatarUrl);
+            displayAvatar.onerror = function() {
+                this.onerror = null;
+                this.src = "assets/images/user.png";
+            };
+        } else if (displayAvatar) {
+            displayAvatar.src = "assets/images/user.png";
         }
 
         // Rating

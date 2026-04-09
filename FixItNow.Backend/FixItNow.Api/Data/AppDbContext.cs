@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using FixItNow.Api.Models;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FixItNow.Api.Data;
 
@@ -15,11 +16,17 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        var stringListComparer = new ValueComparer<List<string>>(
+            (c1, c2) => c1!.SequenceEqual(c2!),
+            c => c!.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())),
+            c => c!.ToList());
+
         modelBuilder.Entity<WorkerProfile>()
             .Property(e => e.Services)
             .HasConversion(
                 v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList());
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList())
+            .Metadata.SetValueComparer(stringListComparer);
 
         // SEED DATA: 5 Worker Profiles
         modelBuilder.Entity<WorkerProfile>().HasData(

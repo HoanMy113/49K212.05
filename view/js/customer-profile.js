@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     // Elements
     const fullNameInput = document.getElementById("fullName");
     const phoneNumberInput = document.getElementById("phoneNumber");
+    const emailInput = document.getElementById("email");
     
     const currentPasswordInput = document.getElementById("currentPassword");
     const newPasswordInput = document.getElementById("newPassword");
@@ -28,13 +29,34 @@ document.addEventListener("DOMContentLoaded", async function () {
     const btnBrowseAvatar = document.getElementById("btnBrowseAvatar");
     const avatarPreview = document.getElementById("profileImagePreview");
 
+    const btnRemoveAvatar = document.getElementById("btnRemoveAvatar");
+    let removeAvatarFlag = false;
+
+    if (btnRemoveAvatar) {
+        btnRemoveAvatar.addEventListener("click", () => {
+            if (confirm("Chắc chắn xóa ảnh đại diện?")) {
+                avatarInput.value = "";
+                if (avatarPreview) avatarPreview.src = "assets/images/user.png";
+                removeAvatarFlag = true;
+            }
+        });
+    }
+
     if (btnBrowseAvatar && avatarInput) {
         btnBrowseAvatar.addEventListener("click", () => avatarInput.click());
         avatarInput.addEventListener("change", function () {
             const file = this.files[0];
             if (file) {
+                removeAvatarFlag = false;
+                // Validate định dạng ảnh
+                if (!file.type.startsWith("image/")) {
+                    alert("Thông báo: Ảnh hoặc tệp tải lên không đủ điều kiện định dạng (Chỉ hỗ trợ JPG/PNG)!");
+                    this.value = "";
+                    return;
+                }
+                // Validate size < 2MB
                 if (file.size > 2 * 1024 * 1024) {
-                    alert("Dung lượng ảnh phải nhỏ hơn 2MB.");
+                    alert("Thông báo: Ảnh quá lớn, không đủ điều kiện dung lượng (Tối đa 2MB)!");
                     this.value = "";
                     return;
                 }
@@ -62,6 +84,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             if (usernameEl) usernameEl.textContent = data.fullName || "Người dùng";
             
             phoneNumberInput.value = data.phone || userPhone;
+
+            // Load email
+            if (emailInput) emailInput.value = data.email || "";
             
             // Sync session if needed
             sessionStorage.setItem("fullName", data.fullName);
@@ -119,12 +144,15 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const uploadData = await uploadRes.json();
                     avatarUrl = uploadData.url; // Đây là đường dẫn tương đối VD: /uploads/abc.jpg
                 }
+            } else if (removeAvatarFlag) {
+                avatarUrl = "";
             }
 
             // 2. Cập nhật thông tin profile qua API
             const updatePayload = {
                 fullName: newName,
-                avatarUrl: avatarUrl
+                avatarUrl: avatarUrl,
+                email: emailInput ? emailInput.value.trim() : ""
             };
 
             const response = await authFetch(`${API_BASE_URL}/api/Users/${userPhone}`, {
@@ -148,6 +176,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (avatarPreview) avatarPreview.src = fullAvatarUrl;
                 const navAvatar = document.querySelector("#userAvatar img");
                 if (navAvatar) navAvatar.src = fullAvatarUrl;
+            } else if (removeAvatarFlag) {
+                sessionStorage.removeItem("userAvatar");
+                if (avatarPreview) avatarPreview.src = "assets/images/user.png";
+                const navAvatar = document.querySelector("#userAvatar img");
+                if (navAvatar) navAvatar.src = "assets/images/user.png";
+                removeAvatarFlag = false;
             }
             
             // Update UI name

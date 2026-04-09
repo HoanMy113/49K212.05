@@ -20,14 +20,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnBrowseAvatar = document.getElementById("btnBrowseAvatar");
     const avatarPreview = document.getElementById("avatarPreview");
 
+    const btnRemoveAvatar = document.getElementById("btnRemoveAvatar");
+    let removeAvatarFlag = false;
+
+    if (btnRemoveAvatar) {
+        btnRemoveAvatar.addEventListener("click", () => {
+            if (confirm("Chắc chắn xóa ảnh đại diện?")) {
+                avatarInput.value = "";
+                if (avatarPreview) avatarPreview.src = "assets/images/user.png";
+                removeAvatarFlag = true;
+            }
+        });
+    }
+
     if (btnBrowseAvatar && avatarInput) {
         btnBrowseAvatar.addEventListener("click", () => avatarInput.click());
         avatarInput.addEventListener("change", function () {
             const file = this.files[0];
             if (file) {
+                removeAvatarFlag = false;
+                // Validate định dạng ảnh
+                if (!file.type.startsWith("image/")) {
+                    alert("Thông báo: Ảnh hoặc tệp tải lên không đủ điều kiện định dạng (Chỉ hỗ trợ JPG/PNG)!");
+                    this.value = "";
+                    return;
+                }
                 // Validate size < 2MB
                 if (file.size > 2 * 1024 * 1024) {
-                    alert("Dung lượng ảnh phải nhỏ hơn 2MB.");
+                    alert("Thông báo: Ảnh quá lớn, không đủ điều kiện dung lượng (Tối đa 2MB)!");
                     this.value = "";
                     return;
                 }
@@ -192,6 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnSaveProfile = document.getElementById("btnSaveProfile");
 
     const apiUrl = profileId ? `${API_BASE_URL}/api/profiles/${profileId}` : null;
+    let currentIsActive = true; // lưu lại trạng thái thực tế từ DB
 
     async function loadProfile() {
         if (!apiUrl) return;
@@ -199,6 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const res = await fetch(apiUrl);
             if (!res.ok) return;
             const data = await res.json();
+            currentIsActive = data.isActive !== false; // Lưu trạng thái thực tế
 
             if (inputName) inputName.value = data.nameOrStore || "";
             if (inputPhone) inputPhone.value = data.phoneNumber || userPhone || "";
@@ -234,7 +256,7 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             const nameVal = inputName ? inputName.value.trim() : "";
-            const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸạảấầẩẫậắằẳẵặẹẻẽềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹđĐ\s0-9]+$/;
+            const nameRegex = /^[\p{L}\s0-9]+$/u;
 
             if (nameVal === "") {
                 if (nameError) { nameError.textContent = "Tên không được bỏ trống."; nameError.style.display = "block"; }
@@ -273,7 +295,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 location: fullLocation,
                 description: inputDescription ? inputDescription.value.trim() : "",
                 services: selectedServices,
-                isActive: true
+                isActive: currentIsActive // Giữ nguyên trạng thái thực tế từ DB, không overwrite
             };
 
             if (!apiUrl) {
@@ -301,6 +323,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         const uploadData = await uploadRes.json();
                         avatarUrl = uploadData.url;
                     }
+                } else if (removeAvatarFlag) {
+                    avatarUrl = "";
                 }
 
                 // 2. Cập nhật payload với AvatarUrl
@@ -314,17 +338,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (response.ok) {
                     // 3. Cập nhật dữ liệu local
+                    const newName = nameVal;
+                    sessionStorage.setItem("fullName", newName);
                     if (avatarUrl) {
+                        // Đảm bảo URL đầy đủ nếu cần, hoặc cứ để tương đối
                         const fullAvatarUrl = avatarUrl.startsWith("http") ? avatarUrl : (API_BASE_URL + avatarUrl);
                         sessionStorage.setItem("userAvatar", fullAvatarUrl);
-                        
+
                         // Cập nhật UI ngay lập tức
                         if (avatarPreview) avatarPreview.src = fullAvatarUrl;
                         const navAvatar = document.querySelector("#userAvatar img");
                         if (navAvatar) navAvatar.src = fullAvatarUrl;
+                    } else if (removeAvatarFlag) {
+                        sessionStorage.removeItem("userAvatar");
+                        if (avatarPreview) avatarPreview.src = "assets/images/user.png";
+                        const navAvatar = document.querySelector("#userAvatar img");
+                        if (navAvatar) navAvatar.src = "assets/images/user.png";
+                        removeAvatarFlag = false;
                     }
 
-                    alert("Lưu thông tin thành công!");
+                    // Update UI name in Navbar & Header
+                    const workerNameHeader = document.getElementById("workerNameHeader");
+                    if (workerNameHeader) workerNameHeader.textContent = newName;
+                    
+                    const usernameEl = document.getElementById("username");
+                    if (usernameEl) usernameEl.textContent = newName;
+
+                    showModal("Cập nhật thông tin thành công!", "success");
                     loadProfile();
                 } else {
                     alert("Lưu thất bại. Vui lòng thử lại.");

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const requestId = urlParams.get('requestId');
     const workerId = urlParams.get('workerId');
@@ -7,6 +7,36 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'my-requests.html';
         return;
     }
+
+    // Kiểm tra đã đánh giá đơn này chưa
+    try {
+        const checkRes = await fetch(`${API_BASE_URL}/api/reviews/request/${requestId}`);
+        if (checkRes.ok) {
+            const existingReview = await checkRes.json();
+            const card = document.querySelector('.card');
+            if (card) {
+                const starsHtml = Array.from({length: 5}, (_, i) =>
+                    `<i class="bi ${i < existingReview.rating ? 'bi-star-fill text-warning' : 'bi-star text-secondary'} fs-2"></i>`
+                ).join(' ');
+
+                card.innerHTML = `
+                    <div class="text-center">
+                        <div class="mb-3"><i class="fa-solid fa-circle-check text-success" style="font-size:64px;"></i></div>
+                        <h3 class="fw-bold text-dark mb-2">Bạn đã đánh giá đơn này</h3>
+                        <p class="text-muted mb-4">Cảm ơn bạn đã chia sẻ trải nghiệm!</p>
+                        <div class="d-flex justify-content-center gap-2 mb-3">${starsHtml}</div>
+                        ${existingReview.comment ? `<div class="bg-light rounded-3 p-3 mx-auto" style="max-width:400px;"><i class="fa-solid fa-quote-left text-secondary me-1"></i> <span class="text-dark">${existingReview.comment}</span></div>` : ''}
+                        <div class="mt-4">
+                            <a href="my-requests.html" class="btn text-white fw-bold px-4 py-2 rounded-3" style="background:#4e7d63;">
+                                <i class="bi bi-arrow-left me-2"></i>Quay lại yêu cầu
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+            return; // Dừng lại, không cần khởi tạo form
+        }
+    } catch (e) { /* Chưa đánh giá, tiếp tục hiện form */ }
 
     const starRating = document.getElementById('starRating');
     const stars = starRating.querySelectorAll('.star');
