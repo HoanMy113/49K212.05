@@ -124,41 +124,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    // ======= BROADCAST TOGGLE =======
-    if (broadcastToggle) {
-        broadcastToggle.addEventListener("change", function () {
-            if (this.checked) {
-                mode = "broadcast";
-                if (workerSelectGroup) workerSelectGroup.style.display = "none";
-            } else {
-                mode = "single";
-                if (workerSelectGroup) workerSelectGroup.style.display = "block";
-            }
-        });
+    // ======= BROADCAST AUTO MODE =======
+    const isBroadcast = urlParams.get("broadcast") === "true";
+    const broadcastInfo = document.getElementById("broadcastInfo");
+
+    if (isBroadcast) {
+        mode = "broadcast";
+        if (workerSelectGroup) workerSelectGroup.style.display = "none";
+        if (broadcastInfo) broadcastInfo.style.display = "block";
     }
 
     // Auto-select category từ URL (Quick Categories trên trang chủ)
-    const isBroadcast = urlParams.get("broadcast") === "true";
-    
     if (preCategory) {
-        if (isBroadcast && broadcastToggle) {
-            broadcastToggle.checked = true;
-            broadcastToggle.dispatchEvent(new Event("change"));
-        }
-        
         const categorySelect = document.getElementById("category");
         for (let opt of categorySelect.options) {
             if (opt.value === preCategory) {
                 opt.selected = true;
                 break;
-            }
-        }
-
-        // 💡 ẨN CHỌN THỢ: Nếu đi từ Quick Categories (có category, KHÔNG có workerId)
-        // -> Giấu mục chọn thợ đi để chốt đơn nhanh, mặc định sẽ là "Tự động kết nối"
-        if (!preWorkerId && !preWorkerIds) {
-            if (workerSelectGroup) {
-                workerSelectGroup.style.display = "none";
             }
         }
     }
@@ -169,9 +151,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         
         const opt = document.createElement("option");
         opt.value = preWorkerId;
-        opt.textContent = `Đang tải thông tin thợ (ID: ${preWorkerId})...`;
         opt.selected = true;
         workerSelect.appendChild(opt);
+        
+        // Ẩn select đi và dán một cục div cứng vào
+        workerSelect.style.display = "none";
+        const fakeInput = document.createElement("div");
+        fakeInput.id = "fakeWorkerInput";
+        fakeInput.style.cssText = "background:#eaf3ed; border-radius:12px; padding:12px 18px; border:1.5px solid #c8e6c9; font-weight:700; color:#2c3e50; font-size:15px;";
+        fakeInput.innerHTML = `<i class="fa-solid fa-helmet-safety text-primary me-2"></i> Đang tải thông tin thợ (ID: ${preWorkerId})...`;
+        workerSelect.parentNode.insertBefore(fakeInput, workerSelect);
         
         // Ẩn hướng dẫn "Tự động kết nối" vì người dùng đã chọn thợ cụ thể
         if (workerSelectGroup) {
@@ -211,11 +200,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (preWorkerId && !preWorkerIds) {
                     // Nếu được chọn trước từ trang chi tiết, cập nhật lại tên thật của thợ
                     const selectedWorker = workers.find(w => w.id == preWorkerId);
-                    const opt = workerSelect.querySelector(`option[value="${preWorkerId}"]`);
-                    if (opt && selectedWorker) {
-                        opt.textContent = `${selectedWorker.nameOrStore} — ${selectedWorker.location || "Không rõ"}`;
-                    } else if (opt) {
-                        opt.textContent = `Thợ sửa chữa (ID: ${preWorkerId})`;
+                    const fakeInput = document.getElementById("fakeWorkerInput");
+                    if (fakeInput && selectedWorker) {
+                        fakeInput.innerHTML = `<i class="fa-solid fa-helmet-safety me-2" style="color:#4e7d63;"></i> Thợ: ${selectedWorker.nameOrStore} <span style="color:#666; font-weight:500; font-size:13px; margin-left:8px;">(${selectedWorker.location || "Không rõ"})</span>`;
+                    } else if (fakeInput) {
+                        fakeInput.innerHTML = `<i class="fa-solid fa-helmet-safety me-2" style="color:#4e7d63;"></i> Thợ sửa chữa (ID: ${preWorkerId})`;
                     }
                 } else if (!preWorkerIds) {
                     // Nếu không có thợ chọn trước, hiển thị danh sách tất cả thợ

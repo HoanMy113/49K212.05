@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // ====== RENDER ======
-    function renderRequests(requests) {
+    async function renderRequests(requests) {
         if (!requests || requests.length === 0) {
             requestsList.innerHTML = `
                 <div class="empty-state">
@@ -114,6 +114,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const endIndex = startIndex + itemsPerPage;
         const currentItems = requests.slice(startIndex, endIndex);
 
+        // Kiểm tra đánh giá cho các đơn hoàn thành
+        const reviewedSet = new Set();
+        const completedItems = currentItems.filter(r => r.status === 2);
+        await Promise.all(completedItems.map(async (req) => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/reviews/request/${req.id}`);
+                if (res.ok) reviewedSet.add(req.id);
+            } catch (e) { /* chưa đánh giá */ }
+        }));
+
         requestsList.innerHTML = currentItems.map(req => {
             const dateStr = new Date(req.createdAt).toLocaleDateString('vi-VN');
             const workerHtml = req.workerName
@@ -124,7 +134,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (req.status === 0) {
                 actionsHtml = `<button class="btn btn-outline-danger btn-sm rounded-pill px-4 fw-bold btn-cancel" data-id="${req.id}">Huỷ yêu cầu</button>`;
             } else if (req.status === 2) {
-                actionsHtml = `<a href="review.html?requestId=${req.id}&workerId=${req.workerId}" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold text-white">Đánh giá</a>`;
+                if (reviewedSet.has(req.id)) {
+                    actionsHtml = `<span class="badge bg-light text-success border border-success rounded-pill px-3 py-2 fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã đánh giá</span>`;
+                } else {
+                    actionsHtml = `<a href="review.html?requestId=${req.id}&workerId=${req.workerId}" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold text-white">Đánh giá</a>`;
+                }
             }
 
             return `

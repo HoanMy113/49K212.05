@@ -49,9 +49,20 @@ public class RepairRequestsController : ControllerBase
             _context.RepairRequests.Add(request);
             await _context.SaveChangesAsync();
 
-            // Gửi thông báo cho TẤT CẢ thợ có hồ sơ
+            // Trích xuất Tỉnh/Thành phố từ địa chỉ khách hàng (luôn nằm cuối sau dấu phẩy)
+            var customerProvince = request.Address
+                .Split(',').Last().Trim();
+
+            // Lọc thợ cùng Tỉnh/Thành phố với khách hàng
+            var localWorkerProfileIds = await _context.WorkerProfiles
+                .Where(wp => wp.IsActive && wp.Location.Contains(customerProvince))
+                .Select(wp => wp.Id)
+                .ToListAsync();
+
             var allWorkerUsers = await _context.Users
-                .Where(u => u.Role == UserRole.Worker && u.WorkerProfileId != null)
+                .Where(u => u.Role == UserRole.Worker
+                    && u.WorkerProfileId != null
+                    && localWorkerProfileIds.Contains(u.WorkerProfileId.Value))
                 .ToListAsync();
 
             foreach (var wu in allWorkerUsers)
@@ -200,6 +211,10 @@ public class RepairRequestsController : ControllerBase
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
 
+        // Lấy Location của thợ hiện tại để lọc broadcast theo tỉnh
+        var workerProfile = await _context.WorkerProfiles.FindAsync(workerId);
+        var workerLocation = workerProfile?.Location?.Trim() ?? "";
+
         // ====== BẢO MẬT: Dùng CsvHelper thay vì string.Contains() để tránh sai logic ID ======
         var allPendingRequests = await _context.RepairRequests
             .Where(r => r.Status == RequestStatus.Pending && r.WorkerId == null)
@@ -207,8 +222,11 @@ public class RepairRequestsController : ControllerBase
             .ToListAsync();
 
         var broadcastRequests = allPendingRequests
-            .Where(r => (r.IsBroadcast || CsvHelper.CsvContains(r.TargetWorkerIds, workerId))
-                        && !CsvHelper.CsvContains(r.RejectedWorkerIds, workerId))
+            .Where(r => (r.IsBroadcast
+                         && !string.IsNullOrEmpty(workerLocation)
+                         && r.Address.Contains(workerLocation))
+                        || CsvHelper.CsvContains(r.TargetWorkerIds, workerId))
+            .Where(r => !CsvHelper.CsvContains(r.RejectedWorkerIds, workerId))
             .ToList();
 
         var combined = directRequests
