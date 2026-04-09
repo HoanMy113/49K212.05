@@ -24,6 +24,7 @@ public class UserUpdateDto
 {
     public string FullName { get; set; } = string.Empty;
     public string? AvatarUrl { get; set; }
+    public string? Email { get; set; }
 }
 
 public class ChangePasswordDto

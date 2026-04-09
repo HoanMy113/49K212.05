@@ -53,16 +53,29 @@ public class RepairRequestsController : ControllerBase
             var customerProvince = request.Address
                 .Split(',').Last().Trim();
 
+            // Làm sạch chuỗi tỉnh/thành (loại bỏ "TP", "Thành phố", "Tỉnh") để so khớp an toàn 
+            // ví dụ: bắt được cả Seed data "Hồ Chí Minh" và Data thực tế "Thành phố Hồ Chí Minh"
+            var cleanCustomerProvince = customerProvince
+                .Replace("Thành phố ", "")
+                .Replace("TP ", "")
+                .Replace("Tỉnh ", "")
+                .Trim();
+
             // Lọc thợ cùng Tỉnh/Thành phố với khách hàng
-            var localWorkerProfileIds = await _context.WorkerProfiles
-                .Where(wp => wp.IsActive && wp.Location.Contains(customerProvince))
-                .Select(wp => wp.Id)
+            var localWorkerProfiles = await _context.WorkerProfiles
+                .Where(wp => wp.IsActive && wp.Location.Contains(cleanCustomerProvince))
                 .ToListAsync();
+
+            // Lọc thợ đúng chuyên môn: do Seed Data có "Máy lạnh" (k thiếu prefix "Sửa") nên cần nới lỏng contains 2 chiều
+            var matchedWorkerProfileIds = localWorkerProfiles
+                .Where(wp => wp.Services != null && wp.Services.Any(s => s.Contains(dto.Category) || dto.Category.Contains(s)))
+                .Select(wp => wp.Id)
+                .ToList();
 
             var allWorkerUsers = await _context.Users
                 .Where(u => u.Role == UserRole.Worker
                     && u.WorkerProfileId != null
-                    && localWorkerProfileIds.Contains(u.WorkerProfileId.Value))
+                    && matchedWorkerProfileIds.Contains(u.WorkerProfileId.Value))
                 .ToListAsync();
 
             foreach (var wu in allWorkerUsers)
@@ -214,6 +227,8 @@ public class RepairRequestsController : ControllerBase
         // Lấy Location của thợ hiện tại để lọc broadcast theo tỉnh
         var workerProfile = await _context.WorkerProfiles.FindAsync(workerId);
         var workerLocation = workerProfile?.Location?.Trim() ?? "";
+        var workerServices = workerProfile?.Services ?? new List<string>();
+        var isWorkerActive = workerProfile?.IsActive ?? false;
 
         // ====== BẢO MẬT: Dùng CsvHelper thay vì string.Contains() để tránh sai logic ID ======
         var allPendingRequests = await _context.RepairRequests
@@ -222,10 +237,27 @@ public class RepairRequestsController : ControllerBase
             .ToListAsync();
 
         var broadcastRequests = allPendingRequests
-            .Where(r => (r.IsBroadcast
-                         && !string.IsNullOrEmpty(workerLocation)
-                         && r.Address.Contains(workerLocation))
-                        || CsvHelper.CsvContains(r.TargetWorkerIds, workerId))
+            .Where(r => 
+            {
+                bool isBroadcastMatch = false;
+                if (r.IsBroadcast && isWorkerActive)
+                {
+                    // Lọc theo Tỉnh
+                    var reqProvince = r.Address.Split(',').Last().Trim()
+                                        .Replace("Thành phố ", "")
+                                        .Replace("TP ", "")
+                                        .Replace("Tỉnh ", "")
+                                        .Trim();
+                    bool locationMatch = !string.IsNullOrEmpty(workerLocation) && workerLocation.Contains(reqProvince, StringComparison.OrdinalIgnoreCase);
+                    
+                    // Lọc theo Category
+                    bool categoryMatch = workerServices.Any(s => s.Contains(r.Category, StringComparison.OrdinalIgnoreCase) || r.Category.Contains(s, StringComparison.OrdinalIgnoreCase));
+                    
+                    isBroadcastMatch = locationMatch && categoryMatch;
+                }
+                
+                return isBroadcastMatch || CsvHelper.CsvContains(r.TargetWorkerIds, workerId);
+            })
             .Where(r => !CsvHelper.CsvContains(r.RejectedWorkerIds, workerId))
             .ToList();
 

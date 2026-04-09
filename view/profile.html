@@ -221,9 +221,14 @@
                                     </div>
                                     <div>
                                         <h6 class="fw-bold mb-2" id="workerNameHeader">Hồ sơ thợ sửa chữa</h6>
-                                        <button type="button" class="btn-change-avatar" id="btnBrowseAvatar">
-                                            <i class="fa-solid fa-camera me-2"></i> Thay đổi ảnh
-                                        </button>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn-change-avatar" id="btnBrowseAvatar">
+                                                <i class="fa-solid fa-camera me-2"></i> Thay đổi ảnh
+                                            </button>
+                                            <button type="button" class="btn-change-avatar text-danger border-danger" id="btnRemoveAvatar">
+                                                <i class="fa-solid fa-trash me-2"></i> Xóa ảnh
+                                            </button>
+                                        </div>
                                         <input type="file" id="avatarInput" hidden accept="image/*">
                                         <p class="form-hint mb-0 mt-2">Đề xuất tỉ lệ 1:1, dung lượng < 2MB (JPG, PNG)</p>
                                     </div>

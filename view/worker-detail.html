@@ -181,39 +181,9 @@
     </footer>
 
     <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Navbar Auth UI
-            const navGuest = document.querySelector(".nav-guest");
-            const navUser = document.querySelector(".nav-user");
-
-            function updateNavbar() {
-                if (sessionStorage.getItem("isLoggedIn") === "true") {
-                    if (navGuest) navGuest.style.display = "none";
-                    if (navUser) navUser.style.display = "flex";
-                } else {
-                    if (navUser) navUser.style.display = "none";
-                    if (navGuest) navGuest.style.display = "flex";
-                }
-            }
-            updateNavbar();
-
-            document.getElementById("logoutBtn")?.addEventListener("click", function (e) {
-                e.preventDefault();
-                sessionStorage.clear();
-                window.location.href = "index.html";
-            });
-
-            const userAvatar = document.getElementById("userAvatar");
-            const userMenu = document.querySelector(".user-dropdown .dropdown-menu");
-            userAvatar?.addEventListener("click", function (e) {
-                e.stopPropagation();
-                if (userMenu) userMenu.style.display = userMenu.style.display === "flex" ? "none" : "flex";
-            });
-            document.addEventListener("click", function () {
-                if (userMenu) userMenu.style.display = "none";
-            });
-
             // Book Button Listener
             document.getElementById('bookBtn')?.addEventListener('click', () => {
                 const searchParams = new URLSearchParams(window.location.search);

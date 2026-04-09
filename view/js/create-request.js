@@ -67,26 +67,38 @@ document.addEventListener("DOMContentLoaded", async function () {
     const broadcastGroup = document.getElementById("broadcastGroup");
     const multiWorkerInfo = document.getElementById("multiWorkerInfo");
 
-    // locationData is now sourced from js/location-data.js
+    let allProvinces = [];
 
-    // ======= POPULATE PROVINCE SELECT =======
-    Object.keys(locationData).forEach(province => {
-        const opt = document.createElement("option");
-        opt.value = province;
-        opt.textContent = province;
-        provinceSelect.appendChild(opt);
-    });
+    // ======= LOAD PROVINCES TỪ API =======
+    async function loadProvinces() {
+        try {
+            const res = await fetch('https://provinces.open-api.vn/api/?depth=2');
+            if (!res.ok) return;
+            allProvinces = await res.json();
+            
+            allProvinces.forEach(p => {
+                const opt = document.createElement("option");
+                opt.value = p.name;
+                opt.textContent = p.name;
+                provinceSelect.appendChild(opt);
+            });
+        } catch (err) {
+            console.error("Lỗi lấy danh sách tỉnh/thành:", err);
+        }
+    }
+    loadProvinces();
 
     // ======= PROVINCE → DISTRICT CASCADE =======
     provinceSelect.addEventListener("change", function () {
-        const province = this.value;
+        const provinceName = this.value;
         districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
 
-        if (province && locationData[province] && locationData[province].length > 0) {
-            locationData[province].forEach(d => {
+        const province = allProvinces.find(p => p.name === provinceName);
+        if (province && province.districts) {
+            province.districts.forEach(d => {
                 const opt = document.createElement("option");
-                opt.value = d;
-                opt.textContent = d;
+                opt.value = d.name;
+                opt.textContent = d.name;
                 districtSelect.appendChild(opt);
             });
         }
@@ -254,6 +266,20 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Validate thêm
         if (!basePayload.customerName || !basePayload.customerPhone || !basePayload.category) {
             showModal("Vui lòng điền đầy đủ các trường bắt buộc (*).", "warning");
+            return;
+        }
+
+        // Validate Họ Tên (chỉ được phép sử dụng chữ cái và khoảng trắng)
+        const nameRegex = /^[\p{L}\s]+$/u;
+        if (!nameRegex.test(basePayload.customerName)) {
+            showModal("Họ tên không được chứa số hoặc ký tự đặc biệt.", "warning");
+            return;
+        }
+
+        // Validate số điện thoại: bắt đầu bằng 0, đúng 10 chữ số
+        const phoneRegex = /^0\d{9}$/;
+        if (!phoneRegex.test(basePayload.customerPhone)) {
+            showModal("Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.", "warning");
             return;
         }
 

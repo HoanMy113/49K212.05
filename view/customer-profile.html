@@ -198,9 +198,14 @@
                     <h5 class="fw-bold mb-1" id="displayFullName">Người dùng</h5>
                     <p class="text-muted small mb-4" id="displayRole">Khách hàng</p>
                     
-                    <button type="button" class="btn btn-light w-100 rounded-3 fw-semibold border" style="color: #555;" id="btnBrowseAvatar">
-                        <i class="fa-solid fa-camera me-2"></i> Đổi ảnh đại diện
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-100 rounded-3 fw-semibold border" style="color: #555;" id="btnBrowseAvatar">
+                            <i class="fa-solid fa-camera me-2"></i> Đổi ảnh
+                        </button>
+                        <button type="button" class="btn btn-outline-danger w-100 rounded-3 fw-semibold" id="btnRemoveAvatar">
+                            <i class="fa-solid fa-trash me-2"></i> Xóa ảnh
+                        </button>
+                    </div>
                     <input type="file" id="avatarInput" hidden accept="image/*">
                     <p class="text-muted mt-3" style="font-size: 13px;">Định dạng: JPG, PNG. Bố cục vuông.</p>
                 </div>
@@ -285,24 +290,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/config.js"></script>
+<script src="js/main.js"></script>
 <script src="js/customer-profile.js"></script>
-<script>
-    // Navbar + Tab logic
-    document.addEventListener('DOMContentLoaded', () => {
-        const usernameEl = document.getElementById("username");
-        if (usernameEl) usernameEl.textContent = sessionStorage.getItem("fullName") || "Người dùng";
-
-        const userAvatar = document.getElementById("userAvatar");
-        const dropdownMenu = document.querySelector(".dropdown-menu");
-        if (userAvatar && dropdownMenu) {
-            let isOpen = false;
-            userAvatar.addEventListener("click", (e) => { e.stopPropagation(); isOpen = !isOpen; dropdownMenu.classList.toggle("show", isOpen); });
-            document.addEventListener("click", (e) => { if (isOpen && !dropdownMenu.contains(e.target)) { dropdownMenu.classList.remove("show"); isOpen = false; } });
-        }
-
-        const logoutBtn = document.getElementById("logoutBtn");
-        if (logoutBtn) logoutBtn.addEventListener("click", (e) => { e.preventDefault(); sessionStorage.clear(); window.location.href = "login.html"; });
-    });
-</script>
+<!-- Removed inline script to avoid conflict with main.js -->
 </body>
 </html>

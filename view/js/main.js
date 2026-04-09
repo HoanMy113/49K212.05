@@ -715,8 +715,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="worker-card-body" style="flex-grow:1;">
                         <div class="d-flex align-items-center gap-3 mb-3">
                             <div class="worker-avatar-container" style="width:56px; height:56px; border-radius:50%; overflow:hidden; border:2px solid #eaf3ed; flex-shrink:0;">
-                                <img src="${w.avatarUrl ? (w.avatarUrl.startsWith('http') ? w.avatarUrl : API_BASE_URL + w.avatarUrl) : 'https://cdn-icons-png.flaticon.com/512/147/147144.png'}" 
-                                     alt="Avatar" style="width:100%; height:100%; object-fit:cover;">
+                                <img src="${(w.avatarUrl && w.avatarUrl !== 'null') ? (w.avatarUrl.startsWith('http') ? w.avatarUrl : API_BASE_URL + w.avatarUrl) : 'assets/images/user.png'}" 
+                                     alt="Avatar" style="width:100%; height:100%; object-fit:cover;"
+                                     onerror="this.onerror=null;this.src='assets/images/user.png';">
                             </div>
                             <div style="flex-grow:1; min-width:0;">
                                 <h5 class="worker-name m-0" style="font-weight:800; color:#2c3e50; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${w.nameOrStore || "---"}</h5>

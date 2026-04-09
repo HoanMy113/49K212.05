@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let valid = true;
 
         // 1. Name validation: support full Vietnamese alphabet
-        const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỂỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸạảấầẩẫậắằẳẵặẹẻẽềểễệỉịọỏốồổỗộớờởỡợụủứừửữựỳỵỷỹđĐ\s]+$/;
+        const nameRegex = /^[\p{L}\s]+$/u;
         if (fullName === '') {
             showError(fullNameInput, nameError, 'Họ tên không được để trống.');
             valid = false;

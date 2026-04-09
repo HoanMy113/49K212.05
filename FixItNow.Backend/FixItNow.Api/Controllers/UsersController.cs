@@ -27,6 +27,7 @@ public class UsersController : ControllerBase
         { 
             user.FullName, 
             user.Phone, 
+            user.Email,
             user.Role,
             user.AvatarUrl,
             user.WorkerProfileId
@@ -41,6 +42,7 @@ public class UsersController : ControllerBase
 
         user.FullName = dto.FullName;
         user.AvatarUrl = dto.AvatarUrl;
+        user.Email = dto.Email ?? user.Email;
         
         // Also update WorkerProfile name and avatar if applicable
         if (user.WorkerProfileId.HasValue)
